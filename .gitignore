@@ -1,0 +1,49 @@
+# === SENSITIVE CONFIG — NEVER COMMIT ===
+backend/config/*.php
+!backend/config/*.example.php
+backend/db.php
+
+# === DEBUG/SETUP/MAINTENANCE FILES — DELETE FIRST, THEN ALSO IGNORE ===
+backend/test_*.php
+backend/check_*.php
+backend/migrate_*.php
+backend/create_subscribers_table.php
+frontend/check_db.php
+
+# === DATABASE DUMPS — NEVER IN WEB ROOT ===
+*.sql
+*.sql.gz
+frontend/import_db.bat
+
+# === UPLOADED IMAGES (optional - add if you don't want them in git) ===
+frontend/images/uploads/
+
+# === AUDIT & DOCUMENTATION (Sensitive) ===
+*.docx
+*.pdf
+audit.txt
+audit_utf8.txt
+SECURITY_AUDIT_IMPLEMENTATION.md
+PRE_DEPLOYMENT_CHECKLIST.md
+STRUCTURE_VERIFICATION.md
+REGISTRATION_*.md
+IMPLEMENTATION_COMPLETE.md
+*.py
+
+# === SYSTEM FILES ===
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# === IDE/EDITOR ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === ENVIRONMENT ===
+.env
+.env.local

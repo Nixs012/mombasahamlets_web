@@ -1,0 +1,14 @@
+# Set the default file to look for in this directory
+DirectoryIndex index.php
+
+# Ensure access is allowed
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# Turn off directory listing (security)
+Options -Indexes

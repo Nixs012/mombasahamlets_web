@@ -1,0 +1,35 @@
+# Allow access to all files
+Options -Indexes +FollowSymLinks
+
+# Ensure Apache 2.4+ allows access (fallback for older versions)
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# Redirect HTML files to PHP files
+DirectoryIndex index.php
+RewriteEngine On
+
+# Redirect index.html to index.php
+RewriteRule ^index\.html$ index.php [R=301,L]
+
+# Redirect other HTML files to PHP
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_FILENAME} \.html$
+RewriteRule ^(.*)\.html$ $1.php [R=301,L]
+
+# Allow access to all PHP, CSS, JS, images, and other assets
+<FilesMatch "\.(php|css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+

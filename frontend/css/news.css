@@ -1,0 +1,50 @@
+/* news.css — minimal stylesheet to avoid 404 and provide article-specific styles */
+@import url('style.css');
+
+.news-hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/logo1.jpeg') no-repeat center center/cover !important;
+  background-color: #1a1a1a !important;
+  /* Fallback */
+  min-height: 40vh !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ffffff !important;
+  padding: 2rem;
+}
+
+.news-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.news-hero p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.news-container .news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.news-article .article-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.article-content {
+  padding: 0.75rem 0;
+}
+
+.read-more {
+  color: #4361ee;
+  text-decoration: none;
+  font-weight: 600;
+}

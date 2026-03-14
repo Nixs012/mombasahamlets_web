@@ -1,0 +1,31 @@
+# Root .htaccess - Redirect to frontend folder
+# This ensures that accessing the root URL redirects to frontend
+
+# Redirect root requests to frontend
+DirectoryIndex frontend/index.php
+
+# Ensure access is allowed (Apache 2.4+ and 2.2 fallback)
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# Allow access to frontend and backend directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # If accessing root and no file specified, redirect to frontend
+    RewriteCond %{REQUEST_URI} ^/mombasahamlets_web/?$
+    RewriteRule ^$ frontend/index.php [L,R=301]
+    
+    # Allow direct access to frontend and backend
+    RewriteCond %{REQUEST_URI} ^/mombasahamlets_web/(frontend|backend)/
+    RewriteRule ^ - [L]
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
