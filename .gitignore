@@ -12,6 +12,7 @@ frontend/check_db.php
 
 # === DATABASE DUMPS — NEVER IN WEB ROOT ===
 *.sql
+!mombasa_hamlets_setup.sql
 *.sql.gz
 frontend/import_db.bat
 
