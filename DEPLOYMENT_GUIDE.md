@@ -39,10 +39,19 @@ The repository contains the code and essential files. However, the `frontend/ima
 1. ZIP the `frontend/images` folder on the local machine.
 2. Upload and extract it to the `frontend/` directory on the live server.
 
-## 4. Paystack Integration
-1. Go to your Paystack Dashboard.
-2. Obtain your **Live Secret Key** and **Live Public Key**.
-3. Update `backend/config/paystack_config.php` with these live keys.
+## 4. Paystack Integration & Sensitive Files
+The `backend/config/paystack_config.php` file is sensitive and should never be on GitHub.
+
+### Security Workflow:
+1. **Locally**: Keep your **Test Keys** in this file for development.
+2. **On the Live Server**: 
+   - Manually create the file at `backend/config/paystack_config.php`.
+   - Update it with your **Live Public Key** and **Live Secret Key** from your Paystack dashboard.
+   - Update the `PAYSTACK_VERIFY_URL` to match your live domain:
+     `define('PAYSTACK_VERIFY_URL', 'http://mombasahamlets.co.ke/backend/api/verify_paystack.php');`
+
+### How to transfer sensitive files:
+Use **SFTP** (like FileZilla) to upload `paystack_config.php` and `db.php` directly to your server. Do not use Git for these specific files.
 
 ## 5. Final Verification
 1. Ensure your server has **HTTPS** enabled (SSL/TLS).
