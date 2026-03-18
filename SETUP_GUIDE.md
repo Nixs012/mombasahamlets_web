@@ -2,6 +2,13 @@
 
 This guide will help you set up the **Mombasa Hamlets** project on your own computer so it looks and runs exactly like the development version.
 
+## 0. Prerequisites (CRITICAL)
+Before installing Wampserver, you **MUST** ensure you have all the Microsoft Visual C++ Redistributable packages installed. Without these, Wampserver will fail to start (showing "MSVCR110.dll missing" or similar errors).
+
+1. Download and run the **All-in-One VC Redist** or ensure you have the following versions (both x86 and x64):
+   - VC++ 2008, 2010, 2012, 2013, 2015-2022.
+2. You can find them on the [Microsoft website](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) or use a tool like "Check_vcredist" usually provided on the Wampserver download page.
+
 ## 1. Install Wampserver
 1. Download Wampserver from the [official website](https://www.wampserver.com/en/). Choose the version that matches your Windows (usually 64-bit).
 2. Run the installer. **IMPORTANT**: Install it to the default path `C:\wamp64`.
