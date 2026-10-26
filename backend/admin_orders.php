@@ -6,6 +6,7 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/delivery_zone_helper.php';
+require_once __DIR__ . '/includes/payment_gateway.php';
 
 // Secure the page
 admin_require_login();
@@ -19,6 +20,7 @@ $query = "
         u.last_name, 
         o.total_amount, 
         o.status, 
+        o.payment_status,
         o.shipping_address, 
         o.created_at,
         o.delivery_zone_id
@@ -69,6 +71,7 @@ $stmt->close();
         <th>Customer</th>
         <th>Total</th>
         <th>Status</th>
+        <th>Payment</th>
         <th>Delivery Zone</th>
         <th>Shipping Address</th>
         <th>Date</th>
@@ -92,9 +95,24 @@ $stmt->close();
                 if ($order['status'] === 'paid') $statusClass = 'status-active';
                 if ($order['status'] === 'completed') $statusClass = 'status-active';
                 if ($order['status'] === 'cancelled') $statusClass = 'status-inactive';
+                if ($order['status'] === 'failed') $statusClass = 'status-inactive';
             ?>
             <span class="status-badge <?php echo $statusClass; ?>">
                 <?php echo ucfirst($order['status']); ?>
+            </span>
+        </td>
+        <td>
+            <?php 
+                $paymentStatus = $order['payment_status'] ?? '';
+                if (empty($paymentStatus)) {
+                    $paymentStatus = $order['status'];
+                }
+                $payStatusClass = 'status-pending';
+                if ($paymentStatus === 'paid' || $paymentStatus === 'success') $payStatusClass = 'status-active';
+                if ($paymentStatus === 'failed' || $paymentStatus === 'cancelled') $payStatusClass = 'status-inactive';
+            ?>
+            <span class="status-badge <?php echo $payStatusClass; ?>">
+                <?php echo ucfirst($paymentStatus ?: 'pending'); ?>
             </span>
         </td>
         <td>
@@ -113,21 +131,21 @@ $stmt->close();
         <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
         <td>
             <div class="actions">
-                                        <a href="admin_order_view.php?order_id=<?php echo $order['id']; ?>" class="btn-action btn-edit" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="admin_order_update.php?order_id=<?php echo $order['id']; ?>" class="btn-action btn-edit" title="Update Status">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                            <?php if (empty($orders)): ?>
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 20px;">No orders found.</td>
-                            </tr>
-                            <?php endif; ?>
+                <a href="admin_order_view.php?order_id=<?php echo $order['id']; ?>" class="btn-action btn-edit" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="admin_order_update.php?order_id=<?php echo $order['id']; ?>" class="btn-action btn-edit" title="Update Status">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    <?php if (empty($orders)): ?>
+    <tr>
+        <td colspan="9" style="text-align: center; padding: 20px;">No orders found.</td>
+    </tr>
+    <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

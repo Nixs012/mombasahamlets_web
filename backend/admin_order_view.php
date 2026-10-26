@@ -159,7 +159,16 @@ $stmt->close();
                     <div class="detail-grid">
                         <div class="detail-item">
                             <span class="detail-label">Payment Status</span>
-                            <span class="detail-value"><?php echo $payment ? ucfirst($payment['status']) : 'No payment record'; ?></span>
+                            <span class="detail-value">
+                                <?php 
+                                    $payStatus = $order['payment_status'] ?? ($payment ? $payment['status'] : $order['status']);
+                                    $payStatusClass = '';
+                                    if ($payStatus === 'paid' || $payStatus === 'success') $payStatusClass = 'style="color: var(--kit-green, #006600); font-weight: 700;"';
+                                    if ($payStatus === 'failed' || $payStatus === 'cancelled') $payStatusClass = 'style="color: var(--red, #DC3545); font-weight: 700;"';
+                                    if ($payStatus === 'pending' || $payStatus === 'processing') $payStatusClass = 'style="color: #ffc107; font-weight: 700;"';
+                                ?>
+                                <span <?php echo $payStatusClass; ?>><?php echo ucfirst($payStatus ?: 'pending'); ?></span>
+                            </span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Transaction Ref</span>
@@ -168,6 +177,10 @@ $stmt->close();
                         <div class="detail-item">
                             <span class="detail-label">Payment Method</span>
                             <span class="detail-value"><?php echo $payment ? htmlspecialchars($payment['payment_method']) : 'N/A'; ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Checkout Request ID</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($order['checkout_request_id'] ?? 'N/A'); ?></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Delivery Zone</span>

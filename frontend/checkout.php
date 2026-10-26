@@ -168,11 +168,39 @@ foreach ($cart as $item) {
                     <input type="hidden" id="selected_zone_fee" name="selected_zone_fee" value="0">
 
                     <!-- Hidden fields for Paystack -->
-                    <input type="hidden" name="payment_method" value="Paystack">
+                    <input type="hidden" name="payment_method" id="payment-method-input" value="Paystack">
                     <input type="hidden" id="user_email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
+
+                    <!-- Payment Method Selector -->
+                    <div class="payment-method-selector" style="margin: 20px 0; padding: 15px; border: 2px solid var(--border-color, #dee2e6); border-radius: 8px; background: var(--card-bg, #f8f9fa);">
+                        <h4 style="margin: 0 0 12px; color: var(--dark-navy, #0A192F);"><i class="fas fa-wallet"></i> Select Payment Method</h4>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <label style="flex: 1; min-width: 140px; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s;" onclick="selectPaymentMethod('paystack')">
+                                <input type="radio" name="payment_method_choice" value="paystack" style="margin-bottom: 8px;" checked>
+                                <div style="font-weight: 600; font-size: 0.95em;">Paystack</div>
+                                <div style="font-size: 0.8em; color: var(--text-secondary, #666);">Card / Bank</div>
+                            </label>
+                            <label style="flex: 1; min-width: 140px; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s;" onclick="selectPaymentMethod('mpesa')">
+                                <input type="radio" name="payment_method_choice" value="mpesa" style="margin-bottom: 8px;">
+                                <div style="font-weight: 600; font-size: 0.95em;">M-Pesa STK</div>
+                                <div style="font-size: 0.8em; color: var(--text-secondary, #666);">Mobile Money</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- M-Pesa Phone Field (shown only when M-Pesa selected) -->
+                    <div id="mpesa-phone-field" style="display: none; margin-bottom: 20px;">
+                        <label for="mpesa_phone" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark-navy, #0A192F);">
+                            <i class="fab fa-mpesa"></i> M-Pesa Phone Number
+                        </label>
+                        <input type="tel" id="mpesa_phone" name="mpesa_phone" placeholder="e.g. 0712345678" style="width: 100%; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; font-size: 16px;">
+                    </div>
 
                     <button type="button" id="paystack-btn" class="btn-place-order" disabled>
                         <span>Pay KSh <span id="btn-total-display"><?php echo number_format($total, 2); ?></span> with Paystack</span>
+                    </button>
+                    <button type="button" id="mpesa-btn" class="btn-place-order" style="display: none; background: var(--kit-green, #006600);" disabled>
+                        <span>Pay KSh <span id="btn-total-display-mpesa"><?php echo number_format($total, 2); ?></span> via M-Pesa</span>
                     </button>
                 </form>
                 <div style="margin-top: 20px; font-size: 0.85em; color: #777; display: flex; align-items: center; gap: 8px;">
@@ -202,12 +230,43 @@ foreach ($cart as $item) {
 
         const shippingSelect = document.getElementById('shipping_location');
         const totalDisplay = document.getElementById('btn-total-display');
+        const totalDisplayMpesa = document.getElementById('btn-total-display-mpesa');
         const orderSummaryTotal = document.querySelector('.order-total span:last-child');
         const cartSummary = document.getElementById('cart-summary');
         const paystackBtn = document.getElementById('paystack-btn');
+        const mpesaBtn = document.getElementById('mpesa-btn');
+        const mpesaPhoneField = document.getElementById('mpesa-phone-field');
         const zoneOptionsContainer = document.getElementById('delivery-zone-options');
         const selectedZoneIdInput = document.getElementById('selected_zone_id');
         const selectedZoneFeeInput = document.getElementById('selected_zone_fee');
+        const paymentMethodInput = document.getElementById('payment-method-input');
+
+        let deliveryZones = [];
+        let selectedPaymentMethod = 'paystack';
+        let selectedShippingFee = 0;
+
+        // Select payment method
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            paymentMethodInput.value = method === 'paystack' ? 'Paystack' : 'mpesa_stk';
+            
+            // Update UI
+            document.querySelectorAll('input[name="payment_method_choice"]').forEach(radio => {
+                radio.checked = (radio.value === method);
+            });
+            
+            // Show/hide phone field
+            mpesaPhoneField.style.display = method === 'mpesa' ? 'block' : 'none';
+            
+            // Show/hide buttons
+            paystackBtn.style.display = method === 'paystack' ? 'block' : 'none';
+            mpesaBtn.style.display = method === 'mpesa' ? 'block' : 'none';
+            
+            // Update button label total displays
+            updateAllTotals(selectedShippingFee);
+        }
+
+        // Update all total displays
 
         let deliveryZones = [];
 
@@ -273,11 +332,21 @@ foreach ($cart as $item) {
                 });
             });
 
-            // Show the first zone's fee calculation
-            updateTotal(0);
-            document.getElementById('shipping-fee-display').textContent = 'KSh 0.00';
-            totalDisplay.textContent = baseTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
-            orderSummaryTotal.textContent = 'KSh ' + baseTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            // Auto-select first zone and enable payment buttons
+            const firstRadio = zoneOptionsContainer.querySelector('input[name="delivery_zone"]');
+            if (firstRadio) {
+                firstRadio.checked = true;
+                firstRadio.closest('.zone-option').classList.add('selected');
+                const zone = deliveryZones.find(z => z.id == firstRadio.value);
+                const fee = zone ? parseFloat(zone.fee) : 0;
+                selectedZoneIdInput.value = firstRadio.value;
+                selectedZoneFeeInput.value = fee;
+                updateTotal(fee);
+            }
+
+            // Enable payment buttons
+            paystackBtn.disabled = false;
+            mpesaBtn.disabled = false;
         }
 
         function fallbackToLegacySelect() {
@@ -290,13 +359,24 @@ foreach ($cart as $item) {
                 const rate = shippingRates[this.value] || 0;
                 updateTotal(rate);
             });
+            
+            // Enable payment buttons in fallback
+            paystackBtn.disabled = false;
+            mpesaBtn.disabled = false;
+        }
+
+        function updateAllTotals(fee) {
+            selectedShippingFee = fee;
+            const newTotal = baseTotal + fee;
+            const formatted = newTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            totalDisplay.textContent = formatted;
+            totalDisplayMpesa.textContent = formatted;
+            orderSummaryTotal.textContent = 'KSh ' + formatted;
+            document.getElementById('shipping-fee-display').textContent = 'KSh ' + fee.toLocaleString(undefined, { minimumFractionDigits: 2 });
         }
 
         function updateTotal(fee) {
-            const newTotal = baseTotal + fee;
-            totalDisplay.textContent = newTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
-            orderSummaryTotal.textContent = 'KSh ' + newTotal.toLocaleString(undefined, { minimumFractionDigits: 2 });
-            document.getElementById('shipping-fee-display').textContent = 'KSh ' + fee.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            updateAllTotals(fee);
         }
 
         function escapeHtml(text) {
@@ -369,6 +449,102 @@ foreach ($cart as $item) {
             paystackBtn.innerHTML = originalBtnContent;
             handler.openIframe();
         });
+
+        // M-Pesa STK Push button handler
+        document.getElementById('mpesa-btn').addEventListener('click', async function(e) {
+            const form = document.getElementById('shop-checkout-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            let selectedZoneId = selectedZoneIdInput.value;
+            let shippingCost = parseFloat(selectedZoneFeeInput.value);
+
+            // If zones didn't load, fall back to legacy select
+            if (!selectedZoneId && shippingSelect && shippingSelect.style.display !== 'none') {
+                const location = shippingSelect.value;
+                shippingCost = shippingRates[location] || 0;
+            }
+
+            const phoneInput = document.getElementById('mpesa_phone');
+            if (!phoneInput || !phoneInput.value) {
+                alert('Please enter your M-Pesa phone number.');
+                phoneInput?.focus();
+                return;
+            }
+
+            const fullName = document.getElementById('full_name').value;
+            const email = document.getElementById('email_input') ? document.getElementById('email_input').value : document.getElementById('user_email').value;
+            const address = document.getElementById('shipping_address').value;
+            const totalAmount = baseTotal + shippingCost;
+
+            // Initiate payment via order creation API
+            mpesaBtn.disabled = true;
+            const originalBtnContent = mpesaBtn.innerHTML;
+            mpesaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initiating STK Push...';
+
+            try {
+                const response = await fetch('../backend/api/initiate_payment.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: totalAmount,
+                        phone: phoneInput.value,
+                        payment_method: 'mpesa_stk',
+                        full_name: fullName,
+                        email: email,
+                        shipping_address: address,
+                        shipping_cost: shippingCost,
+                        delivery_zone_id: selectedZoneId ? parseInt(selectedZoneId) : null
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert('STK Push sent! Please check your phone to complete payment.\nOrder #' + result.order_id);
+                    // Poll for payment status
+                    pollPaymentStatus(result.order_id);
+                } else {
+                    alert('Payment initiation failed: ' + result.message);
+                    mpesaBtn.disabled = false;
+                    mpesaBtn.innerHTML = originalBtnContent;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+                mpesaBtn.disabled = false;
+                mpesaBtn.innerHTML = originalBtnContent;
+            }
+        });
+
+        // Poll for payment status
+        function pollPaymentStatus(orderId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`../backend/api/payment_status.php?order_id=${orderId}`);
+                    const data = await response.json();
+                    
+                    if (data.payment_status === 'paid' || data.payment_status === 'success') {
+                        clearInterval(interval);
+                        window.location.href = 'order-success.php?status=success&order_id=' + orderId;
+                    } else if (data.payment_status === 'failed' || data.payment_status === 'cancelled') {
+                        clearInterval(interval);
+                        window.location.href = 'payment-failed.php?order_id=' + orderId;
+                    }
+                    // Continue polling if pending/processing
+                } catch (error) {
+                    clearInterval(interval);
+                    console.error('Polling error:', error);
+                }
+            }, 5000); // Poll every 5 seconds
+
+            // Timeout after 5 minutes
+            setTimeout(() => {
+                clearInterval(interval);
+                alert('Payment timeout. Please check your phone or retry.');
+            }, 300000);
+        }
 
         async function submitOrder(reference, fullName, phone, email, address, shippingCost, selectedZoneId) {
             const btn = document.getElementById('paystack-btn');
