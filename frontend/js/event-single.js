@@ -56,15 +56,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const isPast = new Date(event.event_date) < new Date();
 
+        const escTitle = escapeHtml(event.title || '');
+        const escLocation = escapeHtml(event.location || '');
+        const escCategory = escapeHtml(category);
+        const escStatus = escapeHtml(event.status || 'Scheduled');
+        const escTicketType = escapeHtml(ticketType);
+        const escEventDate = event.event_date ? new Date(event.event_date).toLocaleDateString() : '';
+        const escEventTime = escapeHtml(event.event_time || '');
+        const escDescription = escapeHtml(event.description || 'No description available for this event.');
+
         let eventHTML = `
-            <section class="page-hero" style="background-image: url('${imageUrl}');">
+            <section class="page-hero" style="background-image: url('${imageUrl}');>
                 <div class="hero-overlay"></div>
                 <div class="container hero-content">
-                    <h1 class="animate-pop-in">${event.title}</h1>
+                    <h1 class="animate-pop-in">${escTitle}</h1>
                     <div class="event-meta-single animate-pop-in">
-                        ${event.event_date ? `<span><i class="far fa-calendar-alt"></i> ${new Date(event.event_date).toLocaleDateString()}</span>` : ''}
-                        ${event.event_time ? `<span><i class="far fa-clock"></i> ${event.event_time}</span>` : ''}
-                        <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
+                        ${event.event_date ? `<span><i class="far fa-calendar-alt"></i> ${escEventDate}</span>` : ''}
+                        ${event.event_time ? `<span><i class="far fa-clock"></i> ${escEventTime}</span>` : ''}
+                        <span><i class="fas fa-map-marker-alt"></i> ${escLocation}</span>
                     </div>
                 </div>
             </section>
@@ -73,18 +82,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="event-details-layout">
                         <div class="event-description">
                             <h2>About the Event</h2>
-                            <p>${event.description || 'No description available for this event.'}</p>
+                            <p>${escDescription}</p>
                         </div>
                         <aside class="event-sidebar">
                             <h3>Event Details</h3>
                             <ul class="details-list">
-                                ${event.event_date ? `<li><strong>Date:</strong> ${new Date(event.event_date).toLocaleDateString()}</li>` : ''}
-                                ${event.event_time ? `<li><strong>Time:</strong> ${event.event_time}</li>` : ''}
-                                <li><strong>Location:</strong> ${event.location}</li>
-                                <li><strong>Category:</strong> ${category.charAt(0).toUpperCase() + category.slice(1)}</li>
-                                <li><strong>Status:</strong> ${event.status || 'Scheduled'}</li>
+                                ${event.event_date ? `<li><strong>Date:</strong> ${escEventDate}</li>` : ''}
+                                ${event.event_time ? `<li><strong>Time:</strong> ${escEventTime}</li>` : ''}
+                                <li><strong>Location:</strong> ${escLocation}</li>
+                                <li><strong>Category:</strong> ${escapeHtml(category.charAt(0).toUpperCase() + category.slice(1))}</li>
+                                <li><strong>Status:</strong> ${escStatus}</li>
                             </ul>
-                            ${!isPast ? `<button class="btn btn-primary btn-block action-btn" data-event-name="${event.title}" data-ticket-type="${ticketType}">Get Tickets / Register</button>` : `<a href="events.php" class="btn btn-secondary btn-block">Back to Events</a>`}
+                            ${!isPast ? `<button class="btn btn-primary btn-block action-btn" data-event-name="${escTitle}" data-ticket-type="${escTicketType}">Get Tickets / Register</button>` : `<a href="events.php" class="btn btn-secondary btn-block">Back to Events</a>`}
                         </aside>
                     </div>
                 </div>

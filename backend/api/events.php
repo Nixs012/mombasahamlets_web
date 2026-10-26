@@ -1,8 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// Attempt to include the database connection file.
-@include_once __DIR__ . '/../db.php';
+// Include the database connection file.
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
 
@@ -79,15 +79,20 @@ function handleGet($conn) {
             $where = "WHERE category = '" . $conn->real_escape_string($categoryFilter) . "'";
         }
 
+        $whereClause = $where;
+        unset($where);
+
         if ($page !== null || $limit !== null) {
             $page = $page ?? 1;
             $limit = $limit ?? 8;
             $offset = ($page - 1) * $limit;
 
-            $countResult = $conn->query("SELECT COUNT(*) as total FROM events $where");
+            $countResult = $conn->query("SELECT COUNT(*) as total FROM events $whereClause");
             $total = $countResult->fetch_assoc()['total'];
 
-            $query = "SELECT *, (SELECT COUNT(*) FROM ticket_types WHERE event_id = events.id) as ticket_count FROM events $where ORDER BY event_date DESC LIMIT $limit OFFSET $offset";
+            $limitInt = (int)$limit;
+            $offsetInt = (int)$offset;
+            $query = "SELECT *, (SELECT COUNT(*) FROM ticket_types WHERE event_id = events.id) as ticket_count FROM events $whereClause ORDER BY event_date DESC LIMIT $limitInt OFFSET $offsetInt";
             $result = $conn->query($query);
 
             if ($result) {
@@ -107,7 +112,7 @@ function handleGet($conn) {
             }
         } else {
             // Backward compatibility
-            $query = "SELECT *, (SELECT COUNT(*) FROM ticket_types WHERE event_id = events.id) as ticket_count FROM events $where ORDER BY event_date DESC";
+            $query = "SELECT *, (SELECT COUNT(*) FROM ticket_types WHERE event_id = events.id) as ticket_count FROM events $whereClause ORDER BY event_date DESC";
             $result = $conn->query($query);
 
             if ($result) {

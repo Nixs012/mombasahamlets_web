@@ -119,31 +119,39 @@ function createPlayerCard(player) {
     const base = (window.PROJECT_BASE || '').replace(/\/+$/, '');
     const imageUrl = player.image_url ? `${base}/frontend/${player.image_url.replace(/^\/?frontend\//, '').replace(/^\//, '')}`.replace(/\/{2,}/g, '/') : 'images/logo1.jpeg';
 
+    const escFirstName = escapeHtml(player.first_name || '');
+    const escLastName = escapeHtml(player.last_name || '');
+    const escPosition = escapeHtml(player.position || '');
+    const escJersey = escapeHtml(player.jersey_number || '');
+    const escAppearances = escapeHtml(player.appearances || 0);
+    const escGoals = escapeHtml(player.goals || 0);
+    const escCleanSheets = escapeHtml(player.clean_sheets || 0);
+
     return `
-        <div class="player-card" data-player-id="${player.id}" data-position="${positionClass}">
+        <div class="player-card" data-player-id="${player.id}" data-position="${escapeHtml(positionClass)}">
             <div class="player-image-container">
-                <img src="${imageUrl}" alt="${player.first_name} ${player.last_name}" class="player-image" onerror="this.src='images/logo1.jpeg'">
+                <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-image" onerror="this.src='images/logo1.jpeg'">
                 <div class="player-overlay">
                     <div class="player-info-bottom">
-                        <div class="player-jersey-number">${player.jersey_number || ''}</div>
+                        <div class="player-jersey-number">${escJersey}</div>
                         <div class="player-full-name">
-                            <span class="first-name">${player.first_name}</span>
-                            <span class="last-name">${player.last_name}</span>
+                            <span class="first-name">${escFirstName}</span>
+                            <span class="last-name">${escLastName}</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="player-card-details">
-                <div class="player-position">${player.position}</div>
+                <div class="player-position">${escPosition}</div>
                 <div class="player-mini-stats">
                     <div class="stat-item">
-                        <span class="val">${player.appearances || 0}</span>
+                        <span class="val">${escAppearances}</span>
                         <span class="lbl">Apps</span>
                     </div>
                     <div class="stat-item">
-                        <span class="val">${player.position && player.position.toLowerCase() === 'goalkeeper' ? (player.clean_sheets || 0) : (player.goals || 0)}</span>
-                        <span class="lbl">${player.position && player.position.toLowerCase() === 'goalkeeper' ? 'CS' : 'Goals'}</span>
+                        <span class="val">${escPosition && escPosition.toLowerCase() === 'goalkeeper' ? escCleanSheets : escGoals}</span>
+                        <span class="lbl">${escPosition && escPosition.toLowerCase() === 'goalkeeper' ? 'CS' : 'Goals'}</span>
                     </div>
                 </div>
             </div>
@@ -263,7 +271,7 @@ async function showPlayerModal(playerId) {
         }
     } catch (error) {
         console.error('Error in showPlayerModal:', error);
-        modalBody.innerHTML = `<div class="error-message"><p>${error.message}</p></div>`;
+        modalBody.innerHTML = `<div class="error-message"><p>${escapeHtml(error.message)}</p></div>`;
     }
 }
 
@@ -272,48 +280,59 @@ function createPlayerModalContent(player) {
     const dobDate = player.dob ? new Date(player.dob) : null;
     const joinedDate = player.joined ? new Date(player.joined) : null; // Assuming 'joined' field exists in DB for this
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const escFirstName = escapeHtml(player.first_name || '');
+    const escLastName = escapeHtml(player.last_name || '');
+    const escPosition = escapeHtml(player.position || '');
+    const escJersey = escapeHtml(player.jersey_number || 'N/A');
+    const escNationality = escapeHtml(player.nationality || 'N/A');
+    const escBio = escapeHtml(player.bio || 'No biography available.');
+    const escAppearances = escapeHtml(player.appearances || 0);
+    const escGoals = escapeHtml(player.goals || 0);
+    const escCleanSheets = escapeHtml(player.clean_sheets || 0);
+    const escSaves = escapeHtml(player.saves || 0);
+    const escAssists = escapeHtml(player.assists || 0);
     const imageUrl = player.image_url ? `/mombasahamlets_web/frontend/${player.image_url.replace(/^\/?frontend\//, '')}` : 'images/logo1.jpeg';
 
     return `
             <div class="player-details">
                 <div class="player-details-image-container">
-                    <img src="${imageUrl}" alt="${player.first_name} ${player.last_name}" class="player-details-image" onerror="this.src='images/logo1.jpeg'">
-                    <div class="player-details-number">${player.jersey_number || 'N/A'}</div>
+                    <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-details-image" onerror="this.src='images/logo1.jpeg'">
+                    <div class="player-details-number">${escJersey}</div>
                 </div>
-                <h2 class="player-details-name">${player.first_name} ${player.last_name}</h2>
-                <p class="player-details-position">${player.position}</p>
+                <h2 class="player-details-name">${escFirstName} ${escLastName}</h2>
+                <p class="player-details-position">${escPosition}</p>
                 <div class="player-info-grid">
-                    <div class="player-info-item"><div class="info-label">Nationality</div><div class="info-value">${player.nationality || 'N/A'}</div></div>
+                    <div class="player-info-item"><div class="info-label">Nationality</div><div class="info-value">${escNationality}</div></div>
                     <div class="player-info-item"><div class="info-label">Date of Birth</div><div class="info-value">${dobDate ? dobDate.toLocaleDateString() : 'N/A'}</div></div>
                     <div class="player-info-item"><div class="info-label">Age</div><div class="info-value">${player.age || 'N/A'}</div></div>
                     <div class="player-info-item"><div class="info-label">Joined Club</div><div class="info-value">${joinedDate ? joinedDate.toLocaleDateString('en-US', options) : 'N/A'}</div></div>
 
                 </div>
-                <p class="player-bio">${player.bio || 'No biography available.'}</p>
+                <p class="player-bio">${escBio}</p>
 
                 <div class="player-stats-detailed">
                     <h4>Season Statistics</h4>
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <span class="stat-value">${player.appearances || 0}</span>
+                            <span class="stat-value">${escAppearances}</span>
                             <span class="stat-label">Apps</span>
                         </div>
                         ${player.position && player.position.toLowerCase() === 'goalkeeper' ? `
                         <div class="stat-item">
-                            <span class="stat-value">${player.clean_sheets || 0}</span>
+                            <span class="stat-value">${escCleanSheets}</span>
                             <span class="stat-label">Clean Sheets</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-value">${player.saves || 0}</span>
+                            <span class="stat-value">${escSaves}</span>
                             <span class="stat-label">Saves</span>
                         </div>
                         ` : `
                         <div class="stat-item">
-                            <span class="stat-value">${player.goals || 0}</span>
+                            <span class="stat-value">${escGoals}</span>
                             <span class="stat-label">Goals</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-value">${player.assists || 0}</span>
+                            <span class="stat-value">${escAssists}</span>
                             <span class="stat-label">Assists</span>
                         </div>
                         `}

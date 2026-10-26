@@ -7,6 +7,7 @@
     <title>Privacy Policy - Mombasa Hamlets FC</title>
     <meta name="description"
         content="Learn how Mombasa Hamlets FC collects, uses, and protects your personal information. Read our comprehensive privacy policy.">
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="

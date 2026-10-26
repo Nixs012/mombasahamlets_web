@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="cart-item-details">
                         <span class="cart-item-name"></span>
                         <span class="cart-item-size-container"></span>
-                        <span class="cart-item-meta">${item.quantity} x KSh ${(price || 0).toFixed(2)}</span>
+                        <span class="cart-item-meta"></span>
                     </div>
                     <button class="remove-from-cart" data-index="${index}" aria-label="Remove item"><i class="fas fa-trash"></i></button>
                 `;
@@ -140,6 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.querySelector('.cart-item-name').textContent = item.name;
             const img = listItem.querySelector('img');
             img.alt = item.name;
+
+            // Set cart meta (quantity x price) via textContent
+            const price = item.sale_price ? item.sale_price : item.price;
+            listItem.querySelector('.cart-item-meta').textContent = `${item.quantity} x KSh ${(price || 0).toFixed(2)}`;
 
             if (item.selectedSize) {
                 const sizeSpan = document.createElement('span');
@@ -256,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let optionsHtml = '<option value="">Select Size</option>';
         sizes.forEach(size => {
-            optionsHtml += `<option value="${size}">${size}</option>`;
+            optionsHtml += `<option value="${escapeHtml(size)}">${escapeHtml(size)}</option>`;
         });
 
         return `
@@ -450,11 +454,13 @@ document.addEventListener('DOMContentLoaded', () => {
         modalImg.src = imageUrl;
 
         const isOnSale = product.sale_price && product.sale_price < product.price;
+        const salePriceStr = (product.sale_price || 0).toFixed(2);
+        const regularPriceStr = (product.price || 0).toFixed(2);
         modalPrice.innerHTML = isOnSale ? `
-            <span class="sale-price">KSh ${product.sale_price.toFixed(2)}</span>
-            <span class="original-price">KSh ${product.price.toFixed(2)}</span>
+            <span class="sale-price">KSh ${salePriceStr}</span>
+            <span class="original-price">KSh ${regularPriceStr}</span>
         ` : `
-            <span class="regular-price">KSh ${product.price.toFixed(2)}</span>
+            <span class="regular-price">KSh ${regularPriceStr}</span>
         `;
 
         modalOptions.innerHTML = getProductSizeOptions(product);

@@ -73,15 +73,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const title = isTicket ? item.event_title : (item.product_name || 'Generic Product');
             const subtitle = isTicket ? item.ticket_type_name : 'Shop Item';
             const imgPath = normalizeImg(isTicket ? item.image_url : item.product_image);
+            const escTitle = escapeHtml(title);
+            const escSubtitle = escapeHtml(subtitle);
+            const escQty = escapeHtml(item.quantity);
 
             return `
                 <div class="item-row">
-                    <img src="${imgPath}" alt="${title}" class="item-img" onerror="this.src='images/logo1.jpeg'">
+                    <img src="${imgPath}" alt="${escTitle}" class="item-img" onerror="this.src='images/logo1.jpeg'">
                     <div class="item-info">
-                        <h4>${title}</h4>
-                        <p>${subtitle} x ${item.quantity}</p>
+                        <h4>${escTitle}</h4>
+                        <p>${escSubtitle} x ${escQty}</p>
                     </div>
-                    <div class="item-price">KSh ${parseFloat(item.subtotal).toLocaleString()}</div>
+                    <div class="item-price">KSh ${parseFloat(item.subtotal || 0).toLocaleString()}</div>
                 </div>
             `;
         }).join('');

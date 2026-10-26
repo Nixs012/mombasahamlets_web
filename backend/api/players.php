@@ -1,8 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// Attempt to include the database connection file.
-include_once __DIR__ . '/../db.php';
+// Include the database connection file.
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
 
@@ -77,6 +77,9 @@ function handleGet($conn) {
         $search = isset($_GET['search']) ? $_GET['search'] : '';
 
         $conditions = [];
+        $params = [];
+        $types = '';
+
         if ($positionFilter !== 'all') {
             switch ($positionFilter) {
                 case 'goalkeepers': $conditions[] = "position = 'Goalkeeper'"; break;
@@ -86,25 +89,47 @@ function handleGet($conn) {
             }
         }
         if (!empty($search)) {
-            $s = $conn->real_escape_string($search);
-            $conditions[] = "(first_name LIKE '%$s%' OR last_name LIKE '%$s%' OR position LIKE '%$s%' OR jersey_number LIKE '%$s%')";
+            $searchTerm = '%' . $search . '%';
+            $conditions[] = "(first_name LIKE ? OR last_name LIKE ? OR position LIKE ? OR jersey_number LIKE ?)";
+            $params[] = $searchTerm; $params[] = $searchTerm; $params[] = $searchTerm; $params[] = $searchTerm;
+            $types .= "ssss";
         }
-
-        $where = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
 
         if ($page !== null || $limit !== null) {
             $page = $page ?? 1;
             $limit = $limit ?? 8;
             $offset = ($page - 1) * $limit;
 
-            $countResult = $conn->query("SELECT COUNT(*) as total FROM players $where");
+            // Build WHERE clause with placeholders
+            $whereClause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
+
+            // Count query
+            $countQuery = "SELECT COUNT(*) as total FROM players $whereClause";
+            $countStmt = $conn->prepare($countQuery);
+            if (!empty($params)) {
+                $countStmt->bind_param($types, ...$params);
+            }
+            $countStmt->execute();
+            $countResult = $countStmt->get_result();
             $total = $countResult->fetch_assoc()['total'];
+            $countStmt->close();
 
-            $query = "SELECT * FROM players $where ORDER BY position, last_name, first_name LIMIT $limit OFFSET $offset";
-            $result = $conn->query($query);
+            // Data query
+            $limitInt = (int)$limit;
+            $offsetInt = (int)$offset;
+            $query = "SELECT * FROM players $whereClause ORDER BY position, last_name, first_name LIMIT $limitInt OFFSET $offsetInt";
+            $stmt = $conn->prepare($query);
 
-            if ($result) {
-                $players = $result->fetch_all(MYSQLI_ASSOC);
+            if (!empty($params)) {
+                // Add int for limit/offset? No, those are inline in query
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $result = $stmt->execute();
+            $result = $stmt->get_result();
+            $players = $result->fetch_all(MYSQLI_ASSOC);
+
+            if ($players !== null) {
                 foreach ($players as &$player) {
                     if ($player['dob']) {
                         $birthDate = new DateTime($player['dob']);
@@ -114,6 +139,8 @@ function handleGet($conn) {
                         $player['age'] = null;
                     }
                 }
+                unset($player);
+
                 echo json_encode([
                     'data' => $players,
                     'pagination' => [
@@ -125,20 +152,30 @@ function handleGet($conn) {
                 ]);
             } else {
                 http_response_code(500);
-                echo json_encode(['error' => 'Failed to retrieve players from the database.']);
+                echo json_encode(['error' => 'Failed to retrieve players from the database.', 'details' => $stmt->error]);
             }
+            $stmt->close();
         } else {
-            // Backward compatibility
-            $query = "SELECT * FROM players $where ORDER BY position, last_name, first_name";
-            $result = $conn->query($query);
+            // Backward compatibility - using prepared statement
+            $whereClause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
+            $query = "SELECT * FROM players $whereClause ORDER BY position, last_name, first_name";
+            $stmt = $conn->prepare($query);
 
-            if ($result) {
-                $players = $result->fetch_all(MYSQLI_ASSOC);
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $players = $result->fetch_all(MYSQLI_ASSOC);
+
+            if ($players !== null) {
                 echo json_encode($players);
             } else {
                 http_response_code(500);
-                echo json_encode(['error' => 'Failed to retrieve players from the database.']);
+                echo json_encode(['error' => 'Failed to retrieve players from the database.', 'details' => $stmt->error]);
             }
+            $stmt->close();
         }
     }
 }

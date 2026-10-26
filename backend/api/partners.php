@@ -1,8 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// Attempt to include the database connection file.
-@include_once __DIR__ . '/../db.php';
+// Include the database connection file.
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
 

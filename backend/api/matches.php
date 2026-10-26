@@ -2,8 +2,8 @@
 // This file is now the authoritative API endpoint for matches.
 header("Content-Type: application/json; charset=UTF-8");
 
-// Attempt to include the database connection file.
-@include_once __DIR__ . '/../db.php';
+// Include the database connection file.
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
 
@@ -92,16 +92,21 @@ function handleGet($conn) {
             }
         }
 
+        $whereClause = $where;
+        unset($where);
+
         if ($page !== null || $limit !== null) {
             $page = $page ?? 1;
             $limit = $limit ?? 8;
             $offset = ($page - 1) * $limit;
 
-            $countResult = $conn->query("SELECT COUNT(*) as total FROM matches $where");
+            $countResult = $conn->query("SELECT COUNT(*) as total FROM matches $whereClause");
             $total = $countResult->fetch_assoc()['total'];
 
             // Sort logic matching frontend: live first, then upcoming (soonest), then finished (recent)
-            $query = "SELECT * FROM matches $where ORDER BY 
+            $limitInt = (int)$limit;
+            $offsetInt = (int)$offset;
+            $query = "SELECT * FROM matches $whereClause ORDER BY 
                 CASE 
                     WHEN status = 'live' THEN 1 
                     WHEN status IN ('upcoming', 'scheduled') THEN 2 
@@ -112,7 +117,7 @@ function handleGet($conn) {
                     WHEN status = 'finished' THEN UNIX_TIMESTAMP(match_date) * -1
                     ELSE UNIX_TIMESTAMP(match_date)
                 END ASC
-                LIMIT $limit OFFSET $offset";
+                LIMIT $limitInt OFFSET $offsetInt";
             
             $result = $conn->query($query);
 
@@ -144,7 +149,7 @@ function handleGet($conn) {
             }
         } else {
             // Backward compatibility
-            $query = "SELECT * FROM matches $where ORDER BY match_date ASC";
+            $query = "SELECT * FROM matches $whereClause ORDER BY match_date ASC";
             $result = $conn->query($query);
 
             if ($result) {

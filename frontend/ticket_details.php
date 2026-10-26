@@ -7,7 +7,7 @@ require_once __DIR__ . '/../backend/includes/session_config.php';
 
 // Redirect to login if not authenticated
 if (!isset($_SESSION['user'])) {
-    header("Location: login.php?redirect=ticket_details.php?id=" . ($_GET['id'] ?? ''));
+    header("Location: login.php?redirect=ticket_details.php?id=" . urlencode($_GET['id'] ?? ''));
     exit();
 }
 ?>
@@ -17,6 +17,7 @@ if (!isset($_SESSION['user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Details - Mombasa Hamlets FC</title>
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/ticket-details.css">

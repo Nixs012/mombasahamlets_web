@@ -16,6 +16,7 @@ if (!$eventId) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Checkout - Mombasa Hamlets FC</title>
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
@@ -56,7 +57,7 @@ if (!$eventId) {
         </div>
         <nav class="desktop-nav">
             <ul>
-                <li><a href="event-single.php?id=<?php echo $eventId; ?>"><i class="fas fa-arrow-left"></i> Back to Event</a></li>
+                <li><a href="event-single.php?id=<?php echo (int) $eventId; ?>"><i class="fas fa-arrow-left"></i> Back to Event</a></li>
             </ul>
         </nav>
     </header>
