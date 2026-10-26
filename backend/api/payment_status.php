@@ -5,7 +5,6 @@
  * Queries the status of a payment by order_id or reference.
  * For M-Pesa, queries STK status using CheckoutRequestID.
  */
-require_once __DIR__ . '/../includes/session_config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/payment_gateway.php';
 

@@ -6,7 +6,6 @@
  * Verifies transaction signature and amount against the order.
  * Handles successful, failed, cancelled, and duplicate callbacks.
  */
-require_once __DIR__ . '/../includes/session_config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/payment_gateway.php';
 require_once __DIR__ . '/../includes/ticket_helper.php';

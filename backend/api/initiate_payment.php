@@ -6,6 +6,7 @@
  * Supports both shop checkout and ticket checkout.
  */
 require_once __DIR__ . '/../includes/session_config.php';
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/payment_gateway.php';
 
 header("Content-Type: application/json; charset=UTF-8");
