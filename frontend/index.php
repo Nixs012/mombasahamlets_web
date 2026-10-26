@@ -75,22 +75,87 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
-        <section class="hero home-hero">
+        <!-- Hero Section with Next Match Countdown -->
+        <section class="hero home-hero" aria-labelledby="hero-title">
+            <div class="hero-overlay"></div>
             <div class="hero-content">
-                <h1 class="animate-pop-in">Mombasa Hamlets FC</h1>
-                <p class="animate-pop-in">The Theatre of Dreams</p>
-                <a href="matches.php" class="btn animate-pop-in">Next Match</a>
+                <h1 id="hero-title" class="hero-title animate-pop-in">Mombasa Hamlets FC</h1>
+                <p class="hero-subtitle animate-pop-in-delayed">The Theatre of Dreams</p>
+
+                <!-- Next Match Countdown -->
+                <div class="next-match-countdown animate-pop-in-delayed-2" id="next-match-countdown">
+                    <div class="countdown-label">
+                        <i class="fas fa-clock"></i> Next Match
+                    </div>
+                    <div class="countdown-timer" id="countdown-timer">
+                        <div class="countdown-item">
+                            <span class="countdown-value" id="countdown-days">--</span>
+                            <span class="countdown-label-item">Days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-value" id="countdown-hours">--</span>
+                            <span class="countdown-label-item">Hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-value" id="countdown-minutes">--</span>
+                            <span class="countdown-label-item">Minutes</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-value" id="countdown-seconds">--</span>
+                            <span class="countdown-label-item">Seconds</span>
+                        </div>
+                    </div>
+                    <div class="next-match-info" id="next-match-info" style="display:none;">
+                        <span class="next-match-teams" id="next-match-teams"></span>
+                        <span class="next-match-venue" id="next-match-venue"></span>
+                    </div>
+                    <a href="matches.php" class="btn btn-primary btn-lg animate-pop-in-delayed-3">
+                        <i class="fas fa-calendar-alt"></i> View All Matches
+                    </a>
+                </div>
             </div>
         </section>
 
         <!-- Latest News Section -->
         <section class="latest-news-section" aria-labelledby="latest-news-heading">
             <div class="container">
-                <h2 id="latest-news-heading" class="section-title">Latest News</h2>
+                <h2 id="latest-news-heading" class="section-title">
+                    <span class="section-title-main">Latest News</span>
+                </h2>
                 <div class="news-grid-home" id="latest-news-grid">
                     <!-- News articles will be dynamically loaded here from API -->
-                    <p class="loading-message">Loading latest news...</p>
+                    <div class="news-card-skeleton" aria-label="Loading news">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                    <div class="news-card-skeleton">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                    <div class="news-card-skeleton">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                    <div class="news-card-skeleton">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-center">
                     <a href="news.php" class="btn btn-secondary">More News</a>
@@ -98,26 +163,104 @@
             </div>
         </section>
 
-        <!-- Sponsors Section -->
-        <section class="sponsors-section" aria-labelledby="sponsors-heading">
+        <!-- Featured Players Section -->
+        <section class="featured-players-section" aria-labelledby="featured-players-heading">
             <div class="container">
-                <h2 id="sponsors-heading" class="section-title">Official Partners</h2>
-                <div class="sponsors-grid" id="partners-grid">
-                    <!-- Partners will be dynamically loaded here -->
-                    <div class="loading-partners" style="text-align: center; padding: 2rem;">
-                        <i class="fas fa-spinner fa-spin"></i> Loading Partners...
+                <h2 id="featured-players-heading" class="section-title">
+                    <span class="section-title-main">Featured Players</span>
+                </h2>
+                <div class="players-grid-home" id="featured-players-grid">
+                    <!-- Players will be dynamically loaded here from API -->
+                    <div class="player-card-skeleton" aria-label="Loading players">
+                        <div class="skeleton-player-image"></div>
+                        <div class="skeleton-player-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
                     </div>
+                    <div class="player-card-skeleton">
+                        <div class="skeleton-player-image"></div>
+                        <div class="skeleton-player-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="player-card-skeleton">
+                        <div class="skeleton-player-image"></div>
+                        <div class="skeleton-player-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="player-card-skeleton">
+                        <div class="skeleton-player-image"></div>
+                        <div class="skeleton-player-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <a href="players.php" class="btn btn-secondary">Meet the Team</a>
                 </div>
             </div>
         </section>
 
-        <!-- Shop CTA Section -->
-        <section class="shop-cta-section">
+        <!-- Shop Highlights Section -->
+        <section class="shop-highlights-section" aria-labelledby="shop-highlights-heading">
             <div class="container">
-                <div class="shop-cta-content">
-                    <h2>Official Club Merchandise</h2>
-                    <p>Show your support for the Hamlets by getting the latest kits, training wear, and accessories.</p>
-                    <a href="shop.php" class="btn btn-primary">Visit the Shop</a>
+                <h2 id="shop-highlights-heading" class="section-title">
+                    <span class="section-title-main">Official Club Merchandise</span>
+                </h2>
+                <div class="shop-highlights-grid" id="shop-highlights-grid">
+                    <div class="shop-product-skeleton" aria-label="Loading merchandise">
+                        <div class="skeleton-product-image"></div>
+                        <div class="skeleton-product-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="shop-product-skeleton">
+                        <div class="skeleton-product-image"></div>
+                        <div class="skeleton-product-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="shop-product-skeleton">
+                        <div class="skeleton-product-image"></div>
+                        <div class="skeleton-product-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                    <div class="shop-product-skeleton">
+                        <div class="skeleton-product-image"></div>
+                        <div class="skeleton-product-info">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <a href="shop.php" class="btn btn-primary btn-shine">
+                        <i class="fas fa-shopping-bag"></i> Visit the Shop
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sponsors Section -->
+        <section class="sponsors-section" aria-labelledby="sponsors-heading">
+            <div class="container">
+                <h2 id="sponsors-heading" class="section-title">
+                    <span class="section-title-main">Official Partners</span>
+                </h2>
+                <div class="sponsors-strip" id="partners-strip">
+                    <!-- Partners will be dynamically loaded as scrolling marquee -->
+                    <div class="sponsors-scroll">
+                        <i class="fas fa-spinner fa-spin"></i> Loading Partners...
+                    </div>
                 </div>
             </div>
         </section>
