@@ -1,13 +1,10 @@
-/* Shop Page Specific Styles */
+/* Shop Page Specific Styles - Gold/Navy Dark Theme */
 
-/* 1. Center the entire control section or just the filters? 
-   User asked "All Jerseys... Sale should be at the center of the page"
-*/
+/* 1. Center the entire control section */
 .shop-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Center horizontally */
     gap: 20px;
     margin-bottom: 40px;
 }
@@ -17,42 +14,39 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    /* Center buttons */
     gap: 15px;
 }
 
 /* 3. Category Buttons Styling & Animation */
 .category-link {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    color: #4b5563;
+    background: var(--card-bg, #1a1a1a);
+    border: 1px solid var(--border-color, #333);
+    color: var(--text-secondary, #aaa);
     padding: 10px 24px;
     border-radius: 30px;
-    /* Pill shape */
     font-weight: 600;
     font-size: 15px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Hover Effects */
 .category-link:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: #DA291C;
-    /* Club Red */
-    color: #DA291C;
+    box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+    border-color: var(--accent-gold, #DAA520);
+    color: var(--accent-gold, #DAA520);
 }
 
 /* Active State */
 .category-link.active {
-    background: #DA291C;
-    color: #fff;
-    border-color: #DA291C;
-    box-shadow: 0 4px 12px rgba(218, 41, 28, 0.3);
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
+    border-color: var(--accent-gold, #DAA520);
+    box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4);
     transform: translateY(-2px);
 }
 
@@ -64,7 +58,7 @@
     left: 50%;
     width: 0;
     height: 0;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: width 0.6s ease, height 0.6s ease;
@@ -75,10 +69,7 @@
     height: 300px;
 }
 
-/* Keep Sort controls somewhat aligned or right aligned? 
-   If shop-controls is column centered, sort controls will be centered below filters.
-   Let's ensure sort controls look good centered too.
-*/
+/* Sort controls */
 .sort-controls {
     display: flex;
     align-items: center;
@@ -88,22 +79,22 @@
 .sort-select {
     padding: 8px 16px;
     border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background-color: #fff;
+    border: 1px solid var(--border-color, #333);
+    background-color: var(--input-bg, #1a1a1a);
     font-size: 14px;
-    color: #374151;
+    color: var(--text-primary, #fff);
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
 .sort-select:hover {
-    border-color: #9ca3af;
+    border-color: var(--text-secondary, #aaa);
 }
 
 .sort-select:focus {
     outline: none;
-    border-color: #DA291C;
-    box-shadow: 0 0 0 2px rgba(218, 41, 28, 0.1);
+    border-color: var(--accent-gold, #DAA520);
+    box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.2);
 }
 
 /* Responsive adjustments */
@@ -131,28 +122,28 @@
 .size-select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color, #333);
     border-radius: 6px;
     font-size: 14px;
-    color: #333;
-    background-color: #fff;
+    color: var(--text-primary, #fff);
+    background-color: var(--input-bg, #1a1a1a);
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
 .size-select:focus {
     outline: none;
-    border-color: #DA291C;
+    border-color: var(--accent-gold, #DAA520);
 }
 
-/* Modal Styles */
+/* Modal Styles - Dark Theme */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(10, 25, 47, 0.9);
     display: none;
     justify-content: center;
     align-items: center;
@@ -168,7 +159,7 @@
 }
 
 .modal-container {
-    background: #fff;
+    background: var(--card-bg, #1a1a1a);
     width: 90%;
     max-width: 900px;
     max-height: 90vh;
@@ -177,7 +168,8 @@
     overflow-y: auto;
     transform: translateY(20px);
     transition: transform 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color, #333);
 }
 
 .modal-overlay.active .modal-container {
@@ -188,7 +180,7 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    background: #f3f4f6;
+    background: var(--border-color, #333);
     border: none;
     width: 35px;
     height: 35px;
@@ -198,12 +190,13 @@
     align-items: center;
     justify-content: center;
     z-index: 10;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
+    color: var(--text-primary, #fff);
 }
 
 .modal-close:hover {
-    background: #e5e7eb;
-    color: #DA291C;
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
 }
 
 .modal-content {
@@ -226,7 +219,7 @@
 }
 
 .product-description {
-    color: #666;
+    color: var(--text-secondary, #aaa);
     line-height: 1.6;
     margin: 10px 0;
 }
@@ -240,12 +233,12 @@
     padding: 15px;
     font-size: 16px;
     font-weight: 600;
-    background: #DA291C;
-    color: #fff;
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s ease, transform 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -253,7 +246,8 @@
 }
 
 .modal-actions .btn-primary:hover {
-    background: #b71c14;
+    background: #c9b33b;
+    transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
@@ -283,215 +277,21 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    background: #fff;
-    color: #333;
+    background: var(--card-bg, #1a1a1a);
+    color: var(--text-primary, #fff);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
-    border: none;
+    border: 1px solid var(--border-color, #333);
     cursor: pointer;
 }
 
 .action-btn:hover {
-    background: #DA291C;
-    color: #fff;
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
     transform: scale(1.1);
-}
-
-/* Cart Sidebar Beautification */
-.cart-sidebar {
-    background: #fff;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-}
-
-.cart-header {
-    background: linear-gradient(135deg, #DA291C, #BB0A21);
-    color: #fff;
-    padding: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.cart-close {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.cart-close:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.cart-content {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-.cart-items {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.cart-item {
-    display: grid;
-    grid-template-columns: 80px 1fr auto;
-    gap: 15px;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background 0.2s;
-}
-
-.cart-item:hover {
-    background: #fafafa;
-}
-
-.cart-item-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f9f9f9;
-}
-
-.cart-item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.cart-item-details {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.cart-item-name {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #1a1a1a;
-}
-
-.cart-item-size {
-    font-size: 0.85rem;
-    color: #777;
-    background: #f0f0f0;
-    padding: 2px 8px;
-    border-radius: 4px;
-    width: fit-content;
-}
-
-.cart-item-meta {
-    font-weight: 700;
-    color: #DA291C;
-    font-size: 0.95rem;
-}
-
-.cart-footer {
-    padding: 25px;
-    border-top: 1px solid #eee;
-    background: #fcfcfc;
-}
-
-.cart-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-}
-
-.cart-total strong {
-    color: #1a1a1a;
-}
-
-.cart-total span {
-    color: #DA291C;
-    font-weight: 800;
-}
-
-.btn-checkout {
-    width: 100%;
-    padding: 18px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.3s;
-    background: #DA291C;
-    color: #fff;
-    border: none;
-    box-shadow: 0 4px 15px rgba(218, 41, 28, 0.3);
-}
-
-.btn-checkout:hover {
-    background: #BB0A21;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(218, 41, 28, 0.4);
-}
-
-/* Cart Item Styles */
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.cart-item-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cart-item-name {
-    font-weight: 600;
-    color: #333;
-}
-
-.cart-item-size {
-    font-size: 12px;
-    color: #666;
-}
-
-.cart-item-meta {
-    font-size: 13px;
-    color: #DA291C;
-    font-weight: 500;
-}
-
-.remove-from-cart {
-    background: none;
-    border: none;
-    color: #999;
-    cursor: pointer;
-    padding: 8px;
-    transition: color 0.2s;
-}
-
-.remove-from-cart:hover {
-    color: #DA291C;
 }
 
 /* Badge Animation */
