@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Products grid not found.');
             return;
         }
-        productsGrid.innerHTML = '<div class="loading-spinner"></div><p class="loading-text">Loading Products...</p>';
+        productsGrid.innerHTML = '<div class="products-loading"><div class="skeleton-grid"></div></div>';
 
         try {
             // Use the global API_URL from api-config.js, or fallback to relative path
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             productCard.innerHTML = `
                 <div class="product-image-container">
-                    <img src="${imageUrl}" alt="" class="product-image" onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+                    <img src="${imageUrl}" alt="" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
                     ${isOnSale ? '<span class="sale-badge">Sale</span>' : ''}
                     <div class="product-actions">
                         <button class="action-btn quick-view-btn" aria-label="Quick View" data-product-id="${product.id}"><i class="fas fa-eye"></i></button>
@@ -452,6 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imgPath) imageUrl = imgPath;
         }
         modalImg.src = imageUrl;
+        modalImg.alt = product.name;
+        modalImg.loading = 'lazy';
 
         const isOnSale = product.sale_price && product.sale_price < product.price;
         const salePriceStr = (product.sale_price || 0).toFixed(2);
