@@ -5054,3 +5054,84 @@ footer {
     color: #555;
     line-height: 1.6;
 }
+
+/*--------------------------------------------------------------
+# Delivery Zone Selection Styles
+--------------------------------------------------------------*/
+.delivery-zone-selector {
+    border: 2px solid var(--border-color, #dee2e6);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    background: var(--card-bg, #f8f9fa);
+}
+
+.delivery-zone-selector h4 {
+    margin-top: 0;
+    color: var(--dark-navy, #0A192F);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.delivery-zone-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.zone-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.zone-option:hover {
+    border-color: var(--primary-blue, #003366);
+    background: var(--off-white, #f8f9fa);
+}
+
+.zone-option.selected {
+    border-color: var(--primary-blue, #003366);
+    background: rgba(0, 51, 102, 0.05);
+}
+
+.zone-option input[type="radio"] {
+    margin-right: 12px;
+    accent-color: var(--primary-blue, #003366);
+    cursor: pointer;
+}
+
+.zone-option .zone-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.zone-option .zone-fee {
+    background: var(--primary-blue, #003366);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9em;
+}
+
+/* Delivery fee row in order summary */
+#shipping-fee-display {
+    color: var(--primary-blue, #003366);
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .delivery-zone-selector {
+        padding: 15px;
+    }
+}

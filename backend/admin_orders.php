@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/delivery_zone_helper.php';
 
 // Secure the page
 admin_require_login();
@@ -19,7 +20,8 @@ $query = "
         o.total_amount, 
         o.status, 
         o.shipping_address, 
-        o.created_at 
+        o.created_at,
+        o.delivery_zone_id
     FROM orders o 
     LEFT JOIN users u ON o.user_id = u.id 
     ORDER BY o.created_at DESC
@@ -61,43 +63,56 @@ $stmt->close();
                 <div class="card">
                     <h2>All Customer Orders</h2>
                     <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Shipping Address</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($orders as $order): ?>
-                            <tr>
-                                <td>#<?php echo $order['id']; ?></td>
-                                <td>
-                                    <?php 
-                                        $customerName = trim(($order['first_name'] ?? '') . ' ' . ($order['last_name'] ?? ''));
-                                        echo htmlspecialchars($customerName ?: 'Guest / Unknown');
-                                    ?>
-                                </td>
-                                <td>KSh <?php echo number_format($order['total_amount'], 2); ?></td>
-                                <td>
-                                    <?php 
-                                        $statusClass = 'status-pending';
-                                        if ($order['status'] === 'paid') $statusClass = 'status-active';
-                                        if ($order['status'] === 'completed') $statusClass = 'status-active';
-                                        if ($order['status'] === 'cancelled') $statusClass = 'status-inactive';
-                                    ?>
-                                    <span class="status-badge <?php echo $statusClass; ?>">
-                                        <?php echo ucfirst($order['status']); ?>
-                                    </span>
-                                </td>
-                                <td><?php echo htmlspecialchars($order['shipping_address']); ?></td>
-                                <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
-                                <td>
-                                    <div class="actions">
+<thead>
+    <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Delivery Zone</th>
+        <th>Shipping Address</th>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+    <?php foreach ($orders as $order): ?>
+    <tr>
+        <td>#<?php echo $order['id']; ?></td>
+        <td>
+            <?php 
+                $customerName = trim(($order['first_name'] ?? '') . ' ' . ($order['last_name'] ?? ''));
+                echo htmlspecialchars($customerName ?: 'Guest / Unknown');
+            ?>
+        </td>
+        <td>KSh <?php echo number_format($order['total_amount'], 2); ?></td>
+        <td>
+            <?php 
+                $statusClass = 'status-pending';
+                if ($order['status'] === 'paid') $statusClass = 'status-active';
+                if ($order['status'] === 'completed') $statusClass = 'status-active';
+                if ($order['status'] === 'cancelled') $statusClass = 'status-inactive';
+            ?>
+            <span class="status-badge <?php echo $statusClass; ?>">
+                <?php echo ucfirst($order['status']); ?>
+            </span>
+        </td>
+        <td>
+            <?php 
+                $zoneName = 'N/A';
+                if (!empty($order['delivery_zone_id'])) {
+                    $zone = get_delivery_zone_by_id($conn, $order['delivery_zone_id']);
+                    if ($zone) {
+                        $zoneName = htmlspecialchars($zone['name']);
+                    }
+                }
+                echo $zoneName;
+            ?>
+        </td>
+        <td><?php echo htmlspecialchars($order['shipping_address']); ?></td>
+        <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
+        <td>
+            <div class="actions">
                                         <a href="admin_order_view.php?order_id=<?php echo $order['id']; ?>" class="btn-action btn-edit" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>

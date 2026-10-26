@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/delivery_zone_helper.php';
 
 // Secure the page
 admin_require_login();
@@ -31,6 +32,22 @@ $stmt->close();
 
 if (!$order) {
     die("Order not found.");
+}
+
+// Fetch delivery zone info if the column exists
+$deliveryZoneInfo = null;
+$columnCheck = $conn->query("SHOW COLUMNS FROM orders LIKE 'delivery_zone_id'");
+if ($columnCheck && $columnCheck->num_rows > 0) {
+    if (!empty($order['delivery_zone_id'])) {
+        $zoneQuery = $conn->prepare("SELECT name, fee FROM delivery_zones WHERE id = ?");
+        $zoneQuery->bind_param("i", $order['delivery_zone_id']);
+        $zoneQuery->execute();
+        $zoneResult = $zoneQuery->get_result();
+        if ($zoneResult->num_rows === 1) {
+            $deliveryZoneInfo = $zoneResult->fetch_assoc();
+        }
+        $zoneQuery->close();
+    }
 }
 
 // 2. Fetch Order Items
@@ -83,14 +100,12 @@ $stmt->close();
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="admin.php"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="admin_orders.php" class="active"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+                    <li><a href="admin_orders.php"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+                    <li><a href="admin_delivery_zones.php"><i class="fas fa-truck"></i> <span>Delivery Zones</span></a></li>
                     <li><a href="admin_payments.php"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
-                    <li><a href="admin.php#news" data-tab="news"><i class="fas fa-newspaper"></i> <span>News</span></a></li>
-                    <li><a href="admin.php#matches" data-tab="matches"><i class="fas fa-calendar-alt"></i> <span>Matches</span></a></li>
-                    <li><a href="admin.php#players" data-tab="players"><i class="fas fa-users"></i> <span>Players</span></a></li>
-                    <li><a href="admin.php#shop" data-tab="shop"><i class="fas fa-shopping-cart"></i> <span>Shop</span></a></li>
-                    <li><a href="admin.php#events" data-tab="events"><i class="fas fa-calendar-check"></i> <span>Events</span></a></li>
-                    <li><a href="admin.php#media" data-tab="media"><i class="fas fa-photo-video"></i> <span>Media</span></a></li>
+                    <li><a href="admin.php?tab=shop" data-tab="shop"><i class="fas fa-shopping-cart"></i> <span>Shop</span></a></li>
+                    <li><a href="admin.php?tab=events" data-tab="events"><i class="fas fa-calendar-check"></i> <span>Events</span></a></li>
+                    <li><a href="admin.php?tab=media" data-tab="media"><i class="fas fa-photo-video"></i> <span>Media</span></a></li>
                 </ul>
             </nav>
         </aside>
@@ -153,6 +168,16 @@ $stmt->close();
                         <div class="detail-item">
                             <span class="detail-label">Payment Method</span>
                             <span class="detail-value"><?php echo $payment ? htmlspecialchars($payment['payment_method']) : 'N/A'; ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Delivery Zone</span>
+                            <span class="detail-value">
+                                <?php echo $deliveryZoneInfo ? htmlspecialchars($deliveryZoneInfo['name']) . ' (KSh ' . number_format($deliveryZoneInfo['fee'], 2) . ')' : 'Not specified'; ?>
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Shipping Cost</span>
+                            <span class="detail-value">KSh <?php echo number_format($order['shipping_cost'], 2); ?></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Total Amount</span>
