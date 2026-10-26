@@ -72,15 +72,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 imageUrl = `${base}/frontend/${imgPath}`.replace(/\/{2,}/g, '/');
             }
         }
+        const escTitle = escapeHtml(media.title || '');
+        const escDescription = escapeHtml(media.description || '');
+        const escCategory = escapeHtml(media.category || '');
         const date = media.media_date ? new Date(media.media_date).toLocaleDateString() : '';
 
         return `
-            <div class="photo-card" data-category="${media.category}">
-                <img src="${imageUrl}" alt="${media.title}" class="photo-image" onerror="this.onerror=null; this.src='${fallbackImagePath}';">
+            <div class="photo-card" data-category="${escCategory}">
+                <img src="${imageUrl}" alt="${escTitle}" class="photo-image" onerror="this.onerror=null; this.src='${fallbackImagePath}';">
                 <div class="photo-overlay">
                     <div class="photo-info">
-                        <h3>${media.title}</h3>
-                        <p>${media.description || ''}</p>
+                        <h3>${escTitle}</h3>
+                        <p>${escDescription}</p>
                     </div>
                 </div>
                 <div class="media-brand-label">MHFC</div>
@@ -112,18 +115,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        const escTitle = escapeHtml(media.title || '');
+        const escDescription = escapeHtml(media.description || '');
+        const escCategory = escapeHtml(media.category || '');
+
         return `
-            <div class="video-card" data-category="${media.category}" data-video-url="${finalVideoUrl}" data-is-uploaded="${isUploadedVideo}">
+            <div class="video-card" data-category="${escCategory}" data-video-url="${escapeHtml(finalVideoUrl)}" data-is-uploaded="${isUploadedVideo}">
                 <div class="video-thumbnail">
                     ${isUploadedVideo ?
                 `<video src="${finalVideoUrl}" preload="metadata" muted class="video-preview"></video>` :
-                `<img src="${thumbnailUrl}" alt="${media.title}" onerror="this.onerror=null; this.src='${fallbackImagePath}';">`
+                `<img src="${thumbnailUrl}" alt="${escTitle}" onerror="this.onerror=null; this.src='${fallbackImagePath}';">`
             }
                     <div class="video-play-hint"><i class="fas fa-play"></i></div>
                 </div>
                 <div class="video-info">
-                    <h3>${media.title}</h3>
-                    <p>${media.description || ''}</p>
+                    <h3>${escTitle}</h3>
+                    <p>${escDescription}</p>
                 </div>
             </div>
         `;

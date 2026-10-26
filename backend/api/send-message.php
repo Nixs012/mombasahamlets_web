@@ -2,35 +2,66 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, X-CSRF-Token");
 
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../includes/session_config.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
 
     if (!empty($data->name) && !empty($data->email) && !empty($data->subject) && !empty($data->message)) {
-        
-        $name = mysqli_real_escape_string($conn, $data->name);
-        $email = mysqli_real_escape_string($conn, $data->email);
-        $subject = mysqli_real_escape_string($conn, $data->subject);
-        $message = mysqli_real_escape_string($conn, $data->message);
 
-        // 1. Insert into contact_messages
-        $query = "INSERT INTO contact_messages (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
+        // Verify CSRF token if a session is active
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['csrf_token'])) {
+            $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($data->csrf_token ?? '');
+            if (!verify_csrf_token($csrfToken)) {
+                http_response_code(403);
+                echo json_encode(["status" => "error", "message" => "CSRF token validation failed."]);
+                exit();
+            }
+        }
 
-        if ($conn->query($query)) {
+        $name    = $data->name;
+        $email   = $data->email;
+        $subject = $data->subject;
+        $message = $data->message;
+
+        // 1. Insert into contact_messages using a prepared statement
+        $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+        if (!$stmt) {
+            http_response_code(500);
+            echo json_encode(["status" => "error", "message" => "Unable to prepare statement.", "error" => $conn->error]);
+            exit();
+        }
+
+        $stmt->bind_param("ssss", $name, $email, $subject, $message);
+
+        if ($stmt->execute()) {
             $message_id = $conn->insert_id;
-            
-            // 2. Automatically insert into admin_notifications
-            $notif_query = "INSERT INTO admin_notifications (type, reference_id) VALUES ('message', '$message_id')";
-            $conn->query($notif_query);
+            $stmt->close();
+
+            // 2. Create Admin Notification — also using a prepared statement
+            $notif_type    = 'message';
+            $notif_title   = "New Contact Message: " . $subject;
+            $notif_content = "From: $name ($email)";
+            $notif_link    = "admin.php?tab=messages&id=" . $message_id;
+            $notif_ref     = $message_id;
+
+            $notifStmt = $conn->prepare("INSERT INTO admin_notifications (type, title, content, link, reference_id) VALUES (?, ?, ?, ?, ?)");
+            if ($notifStmt) {
+                $notifStmt->bind_param("ssssi", $notif_type, $notif_title, $notif_content, $notif_link, $notif_ref);
+                $notifStmt->execute();
+                $notifStmt->close();
+            }
 
             http_response_code(201);
             echo json_encode(["status" => "success", "message" => "Message sent successfully."]);
         } else {
             http_response_code(500);
             echo json_encode(["status" => "error", "message" => "Unable to send message.", "error" => $conn->error]);
+            $stmt->close();
         }
     } else {
         http_response_code(400);

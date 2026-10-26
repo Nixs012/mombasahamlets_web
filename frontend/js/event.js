@@ -209,20 +209,24 @@ document.addEventListener('DOMContentLoaded', function () {
             return p.indexOf('/') !== -1 ? p : 'images/' + p;
         }
 
+        const escTitle = escapeHtml(event.title || '');
+        const escLocation = escapeHtml(event.location || '');
+        const escCategory = escapeHtml(event.category ? event.category.toLowerCase() : '');
+
         return `
             <a href="event-single.php?id=${event.id}" class="event-card-link">
-                <div class="event-card" data-category="${event.category.toLowerCase()}">
+                <div class="event-card" data-category="${escCategory}">
                     <div class="event-image">
-                        <img src="${normalizeImagePath(event.image_url || event.image)}" alt="${event.title}" onerror="this.src='images/logo1.jpeg'">
+                        <img src="${normalizeImagePath(event.image_url || event.image)}" alt="${escTitle}" onerror="this.src='images/logo1.jpeg'">
                     </div>
                     <div class="event-info">
                         <div class="event-date">
-                            <span class="month">${month}</span>
-                            <span class="day">${day}</span>
+                            <span class="month">${escapeHtml(month)}</span>
+                            <span class="day">${escapeHtml(String(day))}</span>
                         </div>
-                        <h3 class="event-title">${event.title}</h3>
-                        <p class="event-location"><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
-                        <button class="btn ${buttonClass}" data-event-id="${event.id}" data-event="${event.title}" data-ticket-type="${ticketType}">${buttonText}</button>
+                        <h3 class="event-title">${escTitle}</h3>
+                        <p class="event-location"><i class="fas fa-map-marker-alt"></i> ${escLocation}</p>
+                        <button class="btn ${buttonClass}" data-event-id="${event.id}" data-event="${escTitle}" data-ticket-type="${escapeHtml(ticketType)}">${escapeHtml(buttonText)}</button>
                     </div>
                 </div>
             </a>

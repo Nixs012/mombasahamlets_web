@@ -66,35 +66,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            ordersList.innerHTML = orders.map(order => {
-                const prog = getOrderProgress(order.order_status);
-                return `
+        const escOrderId = escapeHtml(order.order_id || '');
+        const escOrderDate = escapeHtml(new Date(order.order_date).toLocaleDateString());
+        const escOrderStatus = escapeHtml(order.order_status || '');
+        const prog = getOrderProgress(order.order_status);
+
+        return `
                 <tr>
                     <td data-label="Order ID">
-                        <div style="font-weight: 700;">#${order.order_id}</div>
-                        <div class="card-label-small">${new Date(order.order_date).toLocaleDateString()}</div>
+                        <div style="font-weight: 700;">#${escOrderId}</div>
+                        <div class="card-label-small">${escOrderDate}</div>
                     </td>
                     <td data-label="Progress">
                         <div class="progress-container">
                             <div class="progress-track">
-                                <div class="progress-fill status-${order.order_status.toLowerCase()}" style="width: ${prog.pct}%"></div>
+                                <div class="progress-fill status-${escapeHtml(order.order_status.toLowerCase())}" style="width: ${prog.pct}%"></div>
                             </div>
                             <div class="progress-labels">
-                                <span>${prog.label}</span>
+                                <span>${escapeHtml(prog.label)}</span>
                                 <span>${prog.pct}%</span>
                             </div>
                         </div>
                     </td>
                     <td data-label="Status">
-                        <span class="badge badge-${order.order_status.toLowerCase()}">${order.order_status}</span>
+                        <span class="badge badge-${escapeHtml(order.order_status.toLowerCase())}">${escOrderStatus}</span>
                     </td>
                     <td data-label="Action">
-                        <a href="order_details.php?id=${order.order_id}" class="btn btn-sm btn-outline-secondary">Details</a>
+                        <a href="order_details.php?id=${escOrderId}" class="btn btn-sm btn-outline-secondary">Details</a>
                     </td>
                 </tr>
             `}).join('');
         } catch (err) {
-            ordersList.innerHTML = `<tr><td colspan="4" class="text-center text-danger">${err.message}</td></tr>`;
+            ordersList.innerHTML = `<tr><td colspan="4" class="text-center text-danger">${escapeHtml(err.message)}</td></tr>`;
         }
     }
 
@@ -113,13 +116,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 const isUnused = t.ticket_status.toUpperCase() === 'UNUSED';
                 const rowClass = isUnused ? 'row-highlight-unused' : '';
                 const prog = getTicketProgress(t.ticket_status);
+                const escEventTitle = escapeHtml(t.event_title || '');
+                const escTicketCode = escapeHtml(t.ticket_code || '');
+                const escTicketTypeName = escapeHtml(t.ticket_type_name || '');
+                const escTicketStatus = escapeHtml(t.ticket_status || '');
 
                 return `
                 <tr class="${rowClass}">
                     <td data-label="Ticket Info">
                         <div class="ticket-info-bundle">
-                            <span class="ticket-event-name">${t.event_title}</span>
-                            <span class="ticket-meta-small">${t.ticket_code} • ${t.ticket_type_name}</span>
+                            <span class="ticket-event-name">${escEventTitle}</span>
+                            <span class="ticket-meta-small">${escTicketCode} • ${escTicketTypeName}</span>
                         </div>
                         <div class="progress-container" style="max-width: 150px;">
                             <div class="progress-track" style="height: 4px;">
@@ -128,17 +135,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </td>
                     <td data-label="Status">
-                        <span class="badge badge-${t.ticket_status.toLowerCase()}">${t.ticket_status}</span>
+                        <span class="badge badge-${escapeHtml(t.ticket_status.toLowerCase())}">${escTicketStatus}</span>
                     </td>
                     <td data-label="Action">
-                        <a href="ticket_details.php?id=${t.ticket_id}${t.ticket_id == 0 ? `&order_id=${t.order_id}&type_id=${t.ticket_type_id}` : ''}" class="btn btn-sm ${isUnused ? 'btn-primary' : 'btn-outline-secondary'}">
+                        <a href="ticket_details.php?id=${escapeHtml(t.ticket_id)}${t.ticket_id == 0 ? `&order_id=${escapeHtml(t.order_id)}&type_id=${escapeHtml(t.ticket_type_id)}` : ''}" class="btn btn-sm ${isUnused ? 'btn-primary' : 'btn-outline-secondary'}">
                             View QR
                         </a>
                     </td>
                 </tr>
             `}).join('');
         } catch (err) {
-            ticketsList.innerHTML = `<tr><td colspan="3" class="text-center text-danger">${err.message}</td></tr>`;
+            ticketsList.innerHTML = `<tr><td colspan="3" class="text-center text-danger">${escapeHtml(err.message)}</td></tr>`;
         }
     }
 

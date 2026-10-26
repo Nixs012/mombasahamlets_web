@@ -2,7 +2,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 // Attempt to include the database connection file.
-@include_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../db.php';
 
 // Check if the connection variable $conn exists and is valid.
 if (!isset($conn) || (is_object($conn) && $conn->connect_error)) {

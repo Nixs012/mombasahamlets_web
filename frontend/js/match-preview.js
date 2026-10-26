@@ -29,7 +29,7 @@ async function fetchMatchDetails(id) {
     } catch (error) {
         console.error('Error:', error);
         if (loading) loading.style.display = 'none';
-        showError(`Could not load match details.<br><small>${error.message}</small>`);
+        showError(`Could not load match details. <small>${escapeHtml(error.message)}</small>`);
     }
 }
 
@@ -85,22 +85,28 @@ function renderMatch(match) {
         return fullUrl;
     }
 
-    // Team Data
-    const homeTeam = match.home_team || 'Home Team';
-    const awayTeam = match.away_team || 'Away Team';
-    const genericLogo = 'images/logo1.jpeg';
-    const homeLogo = getImageUrl(match.home_logo);
-    const awayLogo = getImageUrl(match.away_logo);
-
-    const score = (match.status === 'finished' || match.status === 'live') && match.home_score !== null
-        ? `<span class="score-display">${match.home_score} - ${match.away_score}</span>`
-        : `<span class="score-display">VS</span>`;
-
     // Status Badge
     let statusClass = 'status-upcoming';
     let statusText = match.status;
     if (match.status === 'live') statusClass = 'status-live';
     if (match.status === 'finished') statusClass = 'status-finished';
+
+    // Team Data
+    const escHomeTeam = escapeHtml(match.home_team || 'Home Team');
+    const escAwayTeam = escapeHtml(match.away_team || 'Away Team');
+    const escCompetition = escapeHtml(match.competition || 'Friendly Match');
+    const escDateStr = escapeHtml(dateStr);
+    const escTimeStr = escapeHtml(timeStr || '');
+    const escVenue = escapeHtml(match.venue || 'TBA');
+    const escStatusText = escapeHtml(statusText ? statusText.toUpperCase() : 'SCHEDULED');
+    const escStatusClass = escapeHtml(statusClass);
+
+    const homeLogo = getImageUrl(match.home_logo);
+    const awayLogo = getImageUrl(match.away_logo);
+
+    const score = (match.status === 'finished' || match.status === 'live') && match.home_score !== null
+        ? `<span class="score-display">${escapeHtml(String(match.home_score))} - ${escapeHtml(String(match.away_score))}</span>`
+        : `<span class="score-display">VS</span>`;
 
     // Lineups Parsing
     function formatLineup(lineupData) {
@@ -114,21 +120,21 @@ function renderMatch(match) {
             if (parsed.starting || parsed.subs) {
                 if (parsed.starting && parsed.starting.length > 0) {
                     html += `<h5 style="margin-top:10px; margin-bottom:5px; color:#555;">Starting XI</h5>`;
-                    html += `<ul class="lineup-list">${parsed.starting.map(p => `<li><span>${p.number || ''}</span> <span>${p.name}</span></li>`).join('')}</ul>`;
+                    html += `<ul class="lineup-list">${parsed.starting.map(p => `<li><span>${escapeHtml(p.number || '')}</span> <span>${escapeHtml(p.name || '')}</span></li>`).join('')}</ul>`;
                 }
                 if (parsed.subs && parsed.subs.length > 0) {
                     html += `<h5 style="margin-top:10px; margin-bottom:5px; color:#555;">Substitutes</h5>`;
-                    html += `<ul class="lineup-list">${parsed.subs.map(p => `<li><span>${p.number || ''}</span> <span>${p.name}</span></li>`).join('')}</ul>`;
+                    html += `<ul class="lineup-list">${parsed.subs.map(p => `<li><span>${escapeHtml(p.number || '')}</span> <span>${escapeHtml(p.name || '')}</span></li>`).join('')}</ul>`;
                 }
             }
             // Handle legacy format (Array)
             else if (Array.isArray(parsed)) {
-                html += `<ul class="lineup-list">${parsed.map(p => `<li><span>${p.number || ''}</span> <span>${p.name}</span></li>`).join('')}</ul>`;
+                html += `<ul class="lineup-list">${parsed.map(p => `<li><span>${escapeHtml(p.number || '')}</span> <span>${escapeHtml(p.name || '')}</span></li>`).join('')}</ul>`;
             } else {
-                html = `<p>${lineupData}</p>`;
+                html = `<p>${escapeHtml(lineupData)}</p>`;
             }
         } catch (e) {
-            html = `<p>${lineupData}</p>`;
+            html = `<p>${escapeHtml(lineupData)}</p>`;
         }
         return html || '<p>No lineup available.</p>';
     }
@@ -141,25 +147,25 @@ function renderMatch(match) {
         <div class="match-details-card">
             <div class="details-header">
                 <div class="match-meta">
-                    <span class="competition">${match.competition || 'Friendly Match'}</span> | 
-                    <span class="date">${dateStr} ${timeStr}</span> | 
-                    <span class="venue">${match.venue || 'TBA'}</span>
+                    <span class="competition">${escCompetition}</span> | 
+                    <span class="date">${escDateStr} ${escTimeStr}</span> | 
+                    <span class="venue">${escVenue}</span>
                 </div>
                 
                 <div class="score-board" style="margin-top: 2rem;">
                     <div class="team-display">
-                        <img src="${homeLogo}" alt="${homeTeam}">
-                        <span>${homeTeam}</span>
+                        <img src="${homeLogo}" alt="${escHomeTeam}">
+                        <span>${escHomeTeam}</span>
                     </div>
                     ${score}
                     <div class="team-display">
-                        <img src="${awayLogo}" alt="${awayTeam}">
-                        <span>${awayTeam}</span>
+                        <img src="${awayLogo}" alt="${escAwayTeam}">
+                        <span>${escAwayTeam}</span>
                     </div>
                 </div>
                 <div style="margin-top: 1rem;">
-                    <span class="match-status ${statusClass}" style="padding: 5px 15px; border-radius: 20px; color: white; background: var(--red); font-size: 0.8rem;">
-                        ${statusText ? statusText.toUpperCase() : 'SCHEDULED'}
+                    <span class="match-status ${escStatusClass}" style="padding: 5px 15px; border-radius: 20px; color: white; background: var(--red); font-size: 0.8rem;">
+                        ${escStatusText}
                     </span>
                 </div>
             </div>
@@ -169,11 +175,11 @@ function renderMatch(match) {
                     <h3>Team Lineups</h3>
                     <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 250px;">
-                            <h4>${homeTeam}</h4>
+                            <h4>${escHomeTeam}</h4>
                             ${homeLineupHTML}
                         </div>
                         <div style="flex: 1; min-width: 250px;">
-                            <h4>${awayTeam}</h4>
+                            <h4>${escAwayTeam}</h4>
                             ${awayLineupHTML}
                         </div>
                     </div>
@@ -202,7 +208,7 @@ function showError(msg) {
     const loading = document.getElementById('match-loading');
     if (loading) loading.style.display = 'none';
     if (content) {
-        content.innerHTML = `<div class="error-message" style="text-align: center; color: red;">${msg}</div>`;
+        content.innerHTML = `<div class="error-message" style="text-align: center; color: red;">${escapeHtml(msg)}</div>`;
         content.style.display = 'block';
     }
 }

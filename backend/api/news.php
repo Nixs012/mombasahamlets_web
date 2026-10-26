@@ -2,7 +2,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 // Includes
-@include_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/jwt_helper.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
@@ -63,15 +63,20 @@ function handleGet($conn) {
             $where = "WHERE category = '" . $conn->real_escape_string($categoryFilter) . "'";
         }
 
+        $whereClause = $where;
+        unset($where);
+
         if ($page !== null || $limit !== null) {
             $page = $page ?? 1;
             $limit = $limit ?? 9;
             $offset = ($page - 1) * $limit;
 
-            $countResult = $conn->query("SELECT COUNT(*) as total FROM news $where");
+            $countResult = $conn->query("SELECT COUNT(*) as total FROM news $whereClause");
             $total = $countResult->fetch_assoc()['total'];
 
-            $query = "SELECT id, title, summary, category, image_url, created_at FROM news $where ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+            $limitInt = (int)$limit;
+            $offsetInt = (int)$offset;
+            $query = "SELECT id, title, summary, category, image_url, created_at FROM news $whereClause ORDER BY created_at DESC LIMIT $limitInt OFFSET $offsetInt";
             $result = $conn->query($query);
             $articles = $result->fetch_all(MYSQLI_ASSOC);
 
@@ -86,7 +91,7 @@ function handleGet($conn) {
             ]);
         } else {
             // Backward compatibility
-            $result = $conn->query("SELECT id, title, summary, category, image_url, created_at FROM news $where ORDER BY created_at DESC");
+            $result = $conn->query("SELECT id, title, summary, category, image_url, created_at FROM news $whereClause ORDER BY created_at DESC");
             $articles = $result->fetch_all(MYSQLI_ASSOC);
             echo json_encode($articles);
         }

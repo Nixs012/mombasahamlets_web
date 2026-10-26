@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../backend/includes/session_config.php';
+require_once __DIR__ . '/../backend/includes/auth.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +11,7 @@
     <title>Contact - Mombasa Hamlets FC</title>
     <meta name="description"
         content="Get in touch with Mombasa Hamlets FC - contact information, location, and inquiry forms">
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="css/style.css?v=faq_fix">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -130,6 +135,8 @@
                 <div class="contact-form" id="contact-form">
                     <h3>Send Us a Message</h3>
                     <form id="contactForm">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+
                         <div class="form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" class="form-control" required>

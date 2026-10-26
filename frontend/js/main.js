@@ -148,19 +148,24 @@ function setupContactPage() {
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
+            const csrfTokenInput = document.querySelector('#contactForm input[name="csrf_token"]');
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 subject: document.getElementById('subject').value,
                 message: document.getElementById('message').value
             };
+            if (csrfTokenInput) {
+                formData.csrf_token = csrfTokenInput.value;
+            }
 
             try {
                 const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
                 const response = await fetch(`${apiUrl}/send-message.php`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfTokenInput ? csrfTokenInput.value : ''
                     },
                     body: JSON.stringify(formData)
                 });

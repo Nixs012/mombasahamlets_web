@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(event => {
             eventTitle.textContent = event.title;
             const eventDate = new Date(event.event_date).toLocaleDateString();
-            eventMeta.innerHTML = `<i class="far fa-calendar-alt"></i> ${eventDate} | <i class="fas fa-map-marker-alt"></i> ${event.location}`;
+            eventMeta.innerHTML = `<i class="far fa-calendar-alt"></i> ${escapeHtml(eventDate)} | <i class="fas fa-map-marker-alt"></i> ${escapeHtml(event.location || '')}`;
 
             if (event.image_url) {
                 // Simplified normalization for checkout
@@ -60,15 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ticketTypesList.innerHTML = types.map(type => `
-            <div class="ticket-item" data-id="${type.id}">
+            <div class="ticket-item" data-id="${escapeHtml(String(type.id))}">
                 <div class="ticket-info">
-                    <span class="ticket-name">${type.name}</span>
+                    <span class="ticket-name">${escapeHtml(type.name || '')}</span>
                     <span class="ticket-price">KSh ${parseFloat(type.price).toLocaleString()} per ticket</span>
                 </div>
                 <div class="quantity-controls">
-                    <button type="button" class="qty-btn minus" data-id="${type.id}"><i class="fas fa-minus"></i></button>
-                    <input type="number" class="qty-input" value="0" min="0" max="10" data-id="${type.id}" readonly>
-                    <button type="button" class="qty-btn plus" data-id="${type.id}"><i class="fas fa-plus"></i></button>
+                    <button type="button" class="qty-btn minus" data-id="${escapeHtml(String(type.id))}"><i class="fas fa-minus"></i></button>
+                    <input type="number" class="qty-input" value="0" min="0" max="10" data-id="${escapeHtml(String(type.id))}" readonly>
+                    <button type="button" class="qty-btn plus" data-id="${escapeHtml(String(type.id))}"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
         `).join('');

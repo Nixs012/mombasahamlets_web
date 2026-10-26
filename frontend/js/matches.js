@@ -179,29 +179,37 @@ function createMatchCard(match) {
     const statusInfo = getStatusInfo(match);
     const matchId = match.id || 0;
 
+    const escHomeTeam = escapeHtml(homeTeam);
+    const escAwayTeam = escapeHtml(awayTeam);
+    const escCompetition = escapeHtml(match.competition || 'Friendly');
+    const escVenue = escapeHtml(match.venue || 'TBA');
+    const escScore = escapeHtml(score);
+    const escStatusText = escapeHtml(statusInfo.text);
+    const escStatusClass = escapeHtml(statusInfo.class);
+
     return `
-        <div class="match-card" data-status="${match.status}">
+        <div class="match-card" data-status="${escapeHtml(match.status || '')}">
             <div class="match-header"> 
-                <span class="match-competition">${match.competition || 'Friendly'}</span>
-                <span class="match-date">${formattedDate} • ${formattedTime}</span>
+                <span class="match-competition">${escCompetition}</span>
+                <span class="match-date">${escapeHtml(formattedDate)} • ${escapeHtml(formattedTime)}</span>
             </div>
             <div class="match-content">
                 <div class="team team-home">
-                    <img src="${homeLogo}" alt="${homeTeam}" class="team-logo">
-                    <span class="team-name">${homeTeam}</span>
+                    <img src="${homeLogo}" alt="${escHomeTeam}" class="team-logo">
+                    <span class="team-name">${escHomeTeam}</span>
                 </div>
                 <div class="match-vs">
-                    <div class="match-score">${score}</div>
-                    <div class="match-status ${statusInfo.class}">${statusInfo.text}</div>
+                    <div class="match-score">${escScore}</div>
+                    <div class="match-status ${escStatusClass}">${escStatusText}</div>
                 </div>
                 <div class="team team-away">
-                    <img src="${awayLogo}" alt="${awayTeam}" class="team-logo">
-                    <span class="team-name">${awayTeam}</span>
+                    <img src="${awayLogo}" alt="${escAwayTeam}" class="team-logo">
+                    <span class="team-name">${escAwayTeam}</span>
                 </div>
             </div>
             <div class="match-info">
                 <span class="match-venue"> 
-                    <i class="fas fa-map-marker-alt"></i> ${match.venue || 'TBA'} ${venueIndicator}
+                    <i class="fas fa-map-marker-alt"></i> ${escVenue} ${escapeHtml(venueIndicator)}
                 </span>
                 <a href="match-preview.php?id=${matchId}" class="match-preview">
                     ${match.status === 'finished' ? 'Match Report' : 'Preview'} <i class="fas fa-arrow-right"></i>
@@ -214,7 +222,7 @@ function createMatchCard(match) {
 function getStatusInfo(match) {
     switch (match.status) {
         case 'live':
-            return { text: match.minute ? `${match.minute}'` : 'LIVE', class: 'status-live' };
+            return { text: match.minute ? `${escapeHtml(String(match.minute))}'` : 'LIVE', class: 'status-live' };
         case 'upcoming':
         case 'scheduled':
             return { text: 'UPCOMING', class: 'status-upcoming' };

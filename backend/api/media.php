@@ -1,8 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// Attempt to include the database connection file.
-@include_once __DIR__ . '/../db.php';
+// Include the database connection file.
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
 
@@ -69,22 +69,42 @@ function handleGet($conn) {
             } else if ($categoryFilter === 'videos') {
                 $conditions[] = "type = 'video'";
             } else {
-                $conditions[] = "category = '" . $conn->real_escape_string($categoryFilter) . "'";
+                $conditions[] = "category = ?";
             }
         }
 
-        $where = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
+        $whereClause = count($conditions) > 0 ? "WHERE " . implode(" AND ", $conditions) : "";
+        $params = [];
+        if ($categoryFilter !== 'all' && $categoryFilter !== 'photos' && $categoryFilter !== 'videos') {
+            $params[] = $categoryFilter;
+        }
 
         if ($page !== null || $limit !== null) {
             $page = $page ?? 1;
             $limit = $limit ?? 8;
             $offset = ($page - 1) * $limit;
 
-            $countResult = $conn->query("SELECT COUNT(*) as total FROM media $where");
+            $countQuery = "SELECT COUNT(*) as total FROM media $whereClause";
+            $countStmt = $conn->prepare($countQuery);
+            if (!empty($params)) {
+                $countStmt->bind_param("s", ...$params);
+            }
+            $countStmt->execute();
+            $countResult = $countStmt->get_result();
             $total = $countResult->fetch_assoc()['total'];
+            $countStmt->close();
 
-            $query = "SELECT * FROM media $where ORDER BY (CASE WHEN type='photo' THEN 1 ELSE 2 END), created_at DESC LIMIT $limit OFFSET $offset";
-            $result = $conn->query($query);
+            $limitInt = (int)$limit;
+            $offsetInt = (int)$offset;
+            $query = "SELECT * FROM media $whereClause ORDER BY (CASE WHEN type='photo' THEN 1 ELSE 2 END), created_at DESC LIMIT $limitInt OFFSET $offsetInt";
+            $stmt = $conn->prepare($query);
+
+            if (!empty($params)) {
+                $stmt->bind_param("s", ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
 
             if ($result) {
                 $media = $result->fetch_all(MYSQLI_ASSOC);
@@ -101,10 +121,18 @@ function handleGet($conn) {
                 http_response_code(500);
                 echo json_encode(['error' => 'Failed to retrieve media from the database.']);
             }
+            $stmt->close();
         } else {
             // Backward compatibility
-            $query = "SELECT * FROM media $where ORDER BY (CASE WHEN type='photo' THEN 1 ELSE 2 END), created_at DESC";
-            $result = $conn->query($query);
+            $query = "SELECT * FROM media $whereClause ORDER BY (CASE WHEN type='photo' THEN 1 ELSE 2 END), created_at DESC";
+            $stmt = $conn->prepare($query);
+
+            if (!empty($params)) {
+                $stmt->bind_param("s", ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
 
             if ($result) {
                 $media = $result->fetch_all(MYSQLI_ASSOC);
@@ -113,6 +141,7 @@ function handleGet($conn) {
                 http_response_code(500);
                 echo json_encode(['error' => 'Failed to retrieve media from the database.']);
             }
+            $stmt->close();
         }
     }
 }

@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } catch (error) {
             console.error('Error:', error);
-            loadingMessage.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #DA291C; font-size: 3em;"></i><h2>Something went wrong</h2><p>${error.message}</p>`;
+            loadingMessage.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #DA291C; font-size: 3em;"></i><h2>Something went wrong</h2><p>${escapeHtml(error.message)}</p>`;
         }
     }
 
@@ -70,25 +70,31 @@ document.addEventListener('DOMContentLoaded', function () {
         if (imgPath.startsWith('/')) imgPath = imgPath.substring(1);
         if (imgPath.indexOf('/') === -1) imgPath = 'images/' + imgPath;
 
+        const escTicketStatus = escapeHtml(ticket.ticket_status || '');
+        const escEventTitle = escapeHtml(ticket.event_title || '');
+        const escLocation = escapeHtml(ticket.location || '');
+        const escTicketTypeName = escapeHtml(ticket.ticket_type_name || '');
+        const escTicketCode = escapeHtml(ticket.ticket_code || '');
+
         div.innerHTML = `
-            <div class="ticket-status-badge status-${ticket.ticket_status.toLowerCase()}">
-                ${ticket.ticket_status}
+            <div class="ticket-status-badge status-${escapeHtml(ticket.ticket_status.toLowerCase())}">
+                ${escTicketStatus}
             </div>
             <div class="ticket-visual">
-                <img src="${imgPath}" alt="${ticket.event_title}" onerror="this.src='images/logo1.jpeg'">
+                <img src="${imgPath}" alt="${escEventTitle}" onerror="this.src='images/logo1.jpeg'">
             </div>
             <div class="ticket-content">
-                <h3 class="ticket-event-title">${ticket.event_title}</h3>
+                <h3 class="ticket-event-title">${escEventTitle}</h3>
                 <div class="ticket-details">
                     <div class="ticket-detail-item">
                         <i class="far fa-calendar-alt"></i>
-                        <span>${eventDate}</span>
+                        <span>${escapeHtml(eventDate)}</span>
                     </div>
                     <div class="ticket-detail-item">
                         <i class="fas fa-map-marker-alt"></i>
-                        <span>${ticket.location}</span>
+                        <span>${escLocation}</span>
                     </div>
-                    <div class="ticket-type-label">${ticket.ticket_type_name}</div>
+                    <div class="ticket-type-label">${escTicketTypeName}</div>
                 </div>
                 <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Ticket</button>
             </div>
@@ -98,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="ticket-info-summary">
                     <span class="ticket-code-label">Ticket Code</span>
-                    <span class="ticket-code-value">${ticket.ticket_code}</span>
+                    <span class="ticket-code-value">${escTicketCode}</span>
                 </div>
             </div>
         `;

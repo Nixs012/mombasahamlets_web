@@ -7,6 +7,7 @@
     <title>Terms of Use - Mombasa Hamlets FC</title>
     <meta name="description"
         content="Read the Terms of Use for Mombasa Hamlets FC website. Understand your rights and responsibilities when using our services.">
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="

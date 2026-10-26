@@ -5,7 +5,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/../includes/session_config.php';
 
 // Includes
-@include_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/jwt_helper.php';
 
 // Check if the connection variable $conn exists and is valid
