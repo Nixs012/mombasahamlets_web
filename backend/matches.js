@@ -15,29 +15,48 @@ async function fetchMatches() {
         if (!response.ok) throw new Error('Failed to fetch matches');
         const matches = await response.json();
 
-        tableBody.innerHTML = '';
+         tableBody.innerHTML = '';
 
-        if (!matches || matches.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#666;">No matches found. Add one using the form above.</td></tr>';
-            return;
-        }
+         if (!matches || matches.length === 0) {
+             tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#666;">No matches found. Add one using the form above.</td></tr>';
+             return;
+         }
 
-        matches.forEach(match => {
-            const row = `
-                <tr>
-                    <td>${match.home_team} vs ${match.away_team}</td>
-                    <td>${match.venue || 'TBA'}</td>
-                    <td>${match.competition}</td>
-                    <td>${new Date(match.match_date).toLocaleString()}</td>
-                    <td><span class="status-badge status-${match.status}">${match.status}</span></td>
-                    <td class="actions">
-                        <button class="btn-edit" data-id="${match.id}" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn-delete" data-id="${match.id}" title="Delete"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
+         matches.forEach(match => {
+             const homeLogo = match.home_team_logo || match.home_logo || null;
+             const awayLogo = match.away_team_logo || match.away_logo || null;
+             
+             const homeLogoHtml = homeLogo 
+                 ? `<img src="${homeLogo.startsWith('http') ? homeLogo : '../' + homeLogo}" alt="Home Logo" class="admin-logo-thumb">`
+                 : '<span class="no-logo">No logo</span>';
+             const awayLogoHtml = awayLogo 
+                 ? `<img src="${awayLogo.startsWith('http') ? awayLogo : '../' + awayLogo}" alt="Away Logo" class="admin-logo-thumb">`
+                 : '<span class="no-logo">No logo</span>';
+             
+             const row = `
+                 <tr>
+                     <td>
+                         <div class="match-team-row">
+                             ${homeLogoHtml}
+                             <span class="team-name">${match.home_team}</span>
+                         </div>
+                         <div class="match-team-row">
+                             ${awayLogoHtml}
+                             <span class="team-name">${match.away_team}</span>
+                         </div>
+                     </td>
+                     <td>${match.venue || 'TBA'}</td>
+                     <td>${match.competition}</td>
+                     <td>${new Date(match.match_date).toLocaleString()}</td>
+                     <td><span class="status-badge status-${match.status}">${match.status}</span></td>
+                     <td class="actions">
+                         <button class="btn-edit" data-id="${match.id}" title="Edit"><i class="fas fa-edit"></i></button>
+                         <button class="btn-delete" data-id="${match.id}" title="Delete"><i class="fas fa-trash"></i></button>
+                     </td>
+                 </tr>
+             `;
+             tableBody.insertAdjacentHTML('beforeend', row);
+         });
     } catch (error) {
         console.error('Error fetching matches:', error);
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#e74c3c;"><i class="fas fa-exclamation-triangle"></i> Failed to load matches. Please try again.</td></tr>';
@@ -135,6 +154,9 @@ async function handleMatchSubmit(e) {
     const homeLineupJson = getLineupJson('home-starting', 'home-subs');
     const awayLineupJson = getLineupJson('away-starting', 'away-subs');
 
+    const homeLogo = (document.getElementById('home-logo')?.value || '').trim() || null;
+    const awayLogo = (document.getElementById('away-logo')?.value || '').trim() || null;
+
     const matchData = {
         home_team: document.getElementById('home-team').value,
         away_team: document.getElementById('away-team').value,
@@ -147,8 +169,8 @@ async function handleMatchSubmit(e) {
         match_report: document.getElementById('match-report').value,
         home_lineup: homeLineupJson,
         away_lineup: awayLineupJson,
-        home_logo: (document.getElementById('home-logo')?.value || '').trim() || null,
-        away_logo: (document.getElementById('away-logo')?.value || '').trim() || null,
+        home_team_logo: homeLogo,
+        away_team_logo: awayLogo,
     };
 
     const validationErrors = validateMatchData(matchData);
@@ -219,12 +241,12 @@ function handleEdit(match) {
     const homeLogoPreview = document.getElementById('home-logo-preview');
     const awayLogoPreview = document.getElementById('away-logo-preview');
 
-    if (homeLogoInput) homeLogoInput.value = match.home_logo || '';
-    if (awayLogoInput) awayLogoInput.value = match.away_logo || '';
+    if (homeLogoInput) homeLogoInput.value = match.home_team_logo || match.home_logo || '';
+    if (awayLogoInput) awayLogoInput.value = match.away_team_logo || match.away_logo || '';
 
     if (homeLogoPreview) {
-        if (match.home_logo) {
-            const logoUrl = match.home_logo.startsWith('http') ? match.home_logo : `../frontend/${match.home_logo}`;
+        if (match.home_team_logo || match.home_logo) {
+            const logoUrl = (match.home_team_logo || match.home_logo).startsWith('http') ? (match.home_team_logo || match.home_logo) : `../frontend/${match.home_team_logo || match.home_logo}`;
             homeLogoPreview.querySelector('img').src = logoUrl;
             homeLogoPreview.style.display = 'block';
         } else {
@@ -233,8 +255,8 @@ function handleEdit(match) {
     }
 
     if (awayLogoPreview) {
-        if (match.away_logo) {
-            const logoUrl = match.away_logo.startsWith('http') ? match.away_logo : `../frontend/${match.away_logo}`;
+        if (match.away_team_logo || match.away_logo) {
+            const logoUrl = (match.away_team_logo || match.away_logo).startsWith('http') ? (match.away_team_logo || match.away_logo) : `../frontend/${match.away_team_logo || match.away_logo}`;
             awayLogoPreview.querySelector('img').src = logoUrl;
             awayLogoPreview.style.display = 'block';
         } else {

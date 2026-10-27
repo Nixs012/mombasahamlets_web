@@ -101,7 +101,7 @@
 
 .ticket-detail-item i {
     width: 16px;
-    color: #DA291C;
+    color: var(--accent-gold, #DAA520);
 }
 
 .ticket-footer {
@@ -161,8 +161,8 @@
     margin-top: 15px;
     width: 100%;
     background: transparent;
-    border: 1px solid #DA291C;
-    color: #DA291C;
+    border: 1px solid var(--accent-gold, #DAA520);
+    color: var(--accent-gold, #DAA520);
     padding: 10px;
     border-radius: 8px;
     cursor: pointer;
@@ -171,8 +171,8 @@
 }
 
 .btn-print:hover {
-    background: #DA291C;
-    color: white;
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
 }
 
 .no-tickets {

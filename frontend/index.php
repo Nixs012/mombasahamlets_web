@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
+<body data-page="home">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>
     <aside class="mobile-sidebar">
@@ -105,7 +105,7 @@
                             <span class="countdown-label-item">Seconds</span>
                         </div>
                     </div>
-                    <div class="next-match-info" id="next-match-info" style="display:none;">
+                    <div class="next-match-info" id="next-match-info">
                         <span class="next-match-teams" id="next-match-teams"></span>
                         <span class="next-match-venue" id="next-match-venue"></span>
                     </div>

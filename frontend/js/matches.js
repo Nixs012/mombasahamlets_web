@@ -163,10 +163,13 @@ function createMatchCard(match) {
 
     const homeTeam = match.home_team || 'Home Team';
     const awayTeam = match.away_team || 'Away Team';
-    const genericLogo = 'images/logo1.jpeg';
-
-    const homeLogo = getImageUrl(match.home_logo);
-    const awayLogo = getImageUrl(match.away_logo);
+    
+    // Home team: use uploaded logo, fallback to Mombasa Hamlets logo
+    const homeLogo = getImageUrl(match.home_team_logo || match.home_logo);
+    
+    // Away team: use uploaded logo, fallback to neutral placeholder
+    const awayPlaceholder = 'images/placeholder-team.svg';
+    const awayLogo = getImageUrl(match.away_team_logo || match.away_logo) || awayPlaceholder;
 
     let venueIndicator = '';
     if (isMombasa(homeTeam)) venueIndicator = '(H)';

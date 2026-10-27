@@ -75,10 +75,16 @@ function handleGet($conn) {
         $limit = isset($_GET['limit']) ? intval($_GET['limit']) : null;
         $positionFilter = isset($_GET['position']) ? $_GET['position'] : 'all';
         $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $statusFilter = isset($_GET['status']) ? $_GET['status'] : 'all';
 
         $conditions = [];
         $params = [];
         $types = '';
+
+        // Handle status filter (for frontend: status=active)
+        if ($statusFilter === 'active') {
+            $conditions[] = "(is_active = 1 OR position IS NOT NULL)";
+        }
 
         if ($positionFilter !== 'all') {
             switch ($positionFilter) {

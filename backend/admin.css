@@ -1668,6 +1668,29 @@ img[src*="placeholder.com"] {
   display: none !important;
 }
 
+/* Match team logos in admin table */
+.match-team-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.admin-logo-thumb {
+  max-height: 30px;
+  max-width: 30px;
+  width: auto;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.no-logo {
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+}
+
 /* Image picker helpers */
 .browse-image-btn {
   display: inline-block;

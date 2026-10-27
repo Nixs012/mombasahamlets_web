@@ -39,14 +39,22 @@ switch ($method) {
 /**
  * Handles GET requests for products.
  * Fetches all products. The frontend will handle filtering and sorting.
+ * Supports: ?limit=N&offset=N, ?featured=true
  */
 function handleGet($conn) {
+    // Check for featured filter
+    $featuredOnly = isset($_GET['featured']) && $_GET['featured'] === 'true';
+
     // If a limit is passed, use pagination. Otherwise, fetch all products for the admin panel.
     if (isset($_GET['limit'])) {
         $limit = intval($_GET['limit']);
         $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
 
-        $query = "SELECT * FROM shop ORDER BY id DESC LIMIT ? OFFSET ?";
+        if ($featuredOnly) {
+            $query = "SELECT * FROM shop WHERE featured = 1 ORDER BY id DESC LIMIT ? OFFSET ?";
+        } else {
+            $query = "SELECT * FROM shop ORDER BY id DESC LIMIT ? OFFSET ?";
+        }
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ii", $limit, $offset);
         $stmt->execute();
@@ -104,14 +112,15 @@ function handlePost($conn) {
     $sale_price = isset($data['sale_price']) && $data['sale_price'] !== '' ? floatval($data['sale_price']) : null;
     $category = $data['category'];
     // Handle image_url - can be null, empty string, or a valid path
-    $image_url = isset($data['image_url']) && $data['image_url'] !== '' && $data['image_url'] !== null 
-        ? trim($data['image_url']) 
+    $image_url = isset($data['image_url']) && $data['image_url'] !== '' && $data['image_url'] !== null
+        ? trim($data['image_url'])
         : null;
     $sizes = $data['sizes'] ?? '';
     $stock_quantity = isset($data['stock_quantity']) ? intval($data['stock_quantity']) : 0;
+    $featured = isset($data['featured']) ? intval($data['featured']) : 0;
 
-    $stmt = $conn->prepare("INSERT INTO shop (name, description, price, sale_price, category, image_url, sizes, stock_quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssddsssi", $name, $description, $price, $sale_price, $category, $image_url, $sizes, $stock_quantity);
+    $stmt = $conn->prepare("INSERT INTO shop (name, description, price, sale_price, category, image_url, sizes, stock_quantity, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssddsssiii", $name, $description, $price, $sale_price, $category, $image_url, $sizes, $stock_quantity, $featured);
 
     if ($stmt->execute()) {
         update_site_timestamp($conn);
@@ -162,14 +171,15 @@ function handlePut($conn) {
     $sale_price = isset($data['sale_price']) && $data['sale_price'] !== '' ? floatval($data['sale_price']) : null;
     $category = $data['category'];
     // Handle image_url - can be null, empty string, or a valid path
-    $image_url = isset($data['image_url']) && $data['image_url'] !== '' && $data['image_url'] !== null 
-        ? trim($data['image_url']) 
+    $image_url = isset($data['image_url']) && $data['image_url'] !== '' && $data['image_url'] !== null
+        ? trim($data['image_url'])
         : null;
     $sizes = $data['sizes'] ?? '';
     $stock_quantity = isset($data['stock_quantity']) ? intval($data['stock_quantity']) : 0;
+    $featured = isset($data['featured']) ? intval($data['featured']) : 0;
 
-    $stmt = $conn->prepare("UPDATE shop SET name = ?, description = ?, price = ?, sale_price = ?, category = ?, image_url = ?, sizes = ?, stock_quantity = ? WHERE id = ?");
-    $stmt->bind_param("ssddsssii", $name, $description, $price, $sale_price, $category, $image_url, $sizes, $stock_quantity, $id);
+    $stmt = $conn->prepare("UPDATE shop SET name = ?, description = ?, price = ?, sale_price = ?, category = ?, image_url = ?, sizes = ?, stock_quantity = ?, featured = ? WHERE id = ?");
+    $stmt->bind_param("ssddsssiii", $name, $description, $price, $sale_price, $category, $image_url, $sizes, $stock_quantity, $featured, $id);
 
     if ($stmt->execute()) {
         update_site_timestamp($conn);

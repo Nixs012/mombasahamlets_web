@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/login-register.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-    <body>
+    <body data-page="login">
     <div class="form-container">
         <div class="form-box">
             <div class="form-header">
@@ -27,21 +27,14 @@
                         <button type="button" class="toggle-password" id="toggle-password"><i class="fas fa-eye"></i></button>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit">Login</button>
-                <div id="error-message" class="error-message"></div>
-                <p class="form-footer">Don't have an account? <a href="register.php">Register here</a></p>
-            </form>
-        </div>
-    </div>
-    <script src="js/api-config.js"></script>
-    <script type="module" src="js/login.js"></script>
-    <script>
-        document.getElementById('toggle-password').addEventListener('click', function() {
-            const pwd = document.getElementById('password');
-            const type = pwd.getAttribute('type');
-            pwd.setAttribute('type', type === 'password' ? 'text' : 'password');
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
-        });
-    </script></body>
+                 <button type="submit" class="btn-submit">Login</button>
+                 <div id="error-message" class="error-message"></div>
+                 <p class="form-footer">Don't have an account? <a href="register.php">Register here</a></p>
+             </form>
+         </div>
+     </div>
+     <script src="js/api-config.js"></script>
+     <script src="js/login.js"></script>
+ </body>
 </html>
 

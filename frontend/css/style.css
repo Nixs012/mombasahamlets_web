@@ -64,7 +64,7 @@ main {
 --------------------------------------------------------------*/
 .header {
     height: var(--header-height);
-    background-color: var(--red);
+    background-color: var(--dark-navy, #0A192F);
     padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
@@ -102,7 +102,7 @@ main {
     /* Start off-screen */
     width: 280px;
     height: 100vh;
-    background-color: var(--dark-red);
+    background-color: var(--dark-navy, #0A192F);
     visibility: hidden;
     /* Hidden by default */
     transition: transform 0.3s ease;
@@ -142,7 +142,7 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--dark-red);
+    background-color: var(--dark-navy, #0A192F);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -325,7 +325,7 @@ main {
 
 .nav-auth .nav-register:hover {
     background: var(--white);
-    color: var(--red);
+    color: var(--accent-gold, #DAA520);
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85), 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
@@ -455,7 +455,7 @@ main {
 }
 
 .nav-auth .nav-login:hover {
-    color: var(--red);
+    color: var(--accent-gold, #DAA520);
 }
 
 .nav-separator {
@@ -535,8 +535,8 @@ main {
 
 .btn {
     display: inline-block;
-    background-color: var(--red);
-    color: var(--white);
+    background-color: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
     padding: 12px 30px;
     border-radius: 30px;
     text-decoration: none;
@@ -545,7 +545,7 @@ main {
 }
 
 .btn:hover {
-    background-color: var(--dark-red);
+    background-color: var(--accent-gold, #DAA520);
     transform: translateY(-3px);
 }
 
@@ -818,6 +818,7 @@ main {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: none;
 }
 
 .next-match-teams {
@@ -952,11 +953,12 @@ main {
 
 .players-grid-home {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1.5rem;
 }
 
-.player-card {
+/* Home page featured player cards - more specific to avoid conflicts with other player-card styles */
+.players-grid-home .player-card {
     background: var(--white);
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
@@ -964,14 +966,18 @@ main {
     text-align: center;
     transition: all 0.3s ease;
     position: relative;
+    border: 1px solid rgba(218, 165, 32, 0.1);
+    max-width: 180px;
+    margin: 0 auto;
 }
 
-.player-card:hover {
+.players-grid-home .player-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    border-color: var(--accent-gold, #DAA520);
 }
 
-.player-image-container {
+.players-grid-home .player-image-container {
     width: 100%;
     padding: 1rem;
     background: linear-gradient(135deg, var(--royal-blue, #003366), var(--dark-navy, #0A192F));
@@ -979,40 +985,48 @@ main {
     justify-content: center;
 }
 
-.player-photo {
-    width: 120px;
-    height: 150px;
+.players-grid-home .player-photo {
+    width: 90px;
+    height: 120px;
     object-fit: cover;
     border-radius: 50% 50% 0 0;
     border: 3px solid rgba(218, 165, 32, 0.3);
     transition: all 0.3s ease;
 }
 
-.player-card:hover .player-photo {
+.players-grid-home .player-card:hover .player-photo {
     border-color: var(--accent-gold, #DAA520);
     transform: scale(1.05);
 }
 
-.player-info {
+.players-grid-home .player-info {
     padding: 1rem;
 }
 
-.player-number {
+.players-grid-home .player-number {
     display: inline-block;
     background: var(--accent-gold, #DAA520);
     color: var(--dark-navy, #0A192F);
     font-weight: 700;
-    font-size: 0.85rem;
-    padding: 2px 10px;
+    font-size: 0.75rem;
+    padding: 2px 8px;
     border-radius: 12px;
     margin-bottom: 0.5rem;
 }
 
-.player-name {
-    font-size: 1.1rem;
+.players-grid-home .player-name {
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--dark-navy, #0A192F);
     margin-bottom: 0.25rem;
+}
+
+.players-grid-home .player-position {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #666);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .player-position {
@@ -1743,7 +1757,7 @@ body.sidebar-open {
 }
 
 .match-card[data-status="live"] {
-    border-left-color: var(--red, #DC3545);
+    border-left-color: var(--accent-gold, #DAA520);
 }
 
 .match-card[data-status="live"] .match-status {
@@ -5794,8 +5808,8 @@ footer {
 }
 
 .faq-item.active {
-    border-color: var(--red);
-    box-shadow: 0 4px 12px rgba(218, 41, 28, 0.1);
+    border-color: var(--accent-gold, #DAA520);
+    box-shadow: 0 4px 12px rgba(218, 165, 32, 0.1);
 }
 
 .faq-question {
@@ -5816,7 +5830,7 @@ footer {
 
 .faq-question i {
     transition: transform 0.3s ease;
-    color: var(--red);
+    color: var(--accent-gold, #DAA520);
 }
 
 .faq-item.active .faq-question i {

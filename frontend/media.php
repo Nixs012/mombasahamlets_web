@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
+<body data-page="media">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>
     <aside class="mobile-sidebar">

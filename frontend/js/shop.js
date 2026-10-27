@@ -141,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = listItem.querySelector('img');
             img.alt = item.name;
 
-            // Set cart meta (quantity x price) via textContent
-            const price = item.sale_price ? item.sale_price : item.price;
+             // Set cart meta (quantity x price) via textContent
             listItem.querySelector('.cart-item-meta').textContent = `${item.quantity} x KSh ${(price || 0).toFixed(2)}`;
 
             if (item.selectedSize) {
@@ -372,6 +371,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial fetch
     fetchProducts();
+
+    // Check for ?product=X query param to open quick view on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const productIdParam = urlParams.get('product');
+    if (productIdParam) {
+        // Wait for products to load before opening quick view
+        const checkAndOpen = setInterval(() => {
+            if (allProducts.length > 0) {
+                clearInterval(checkAndOpen);
+                window.showQuickView(parseInt(productIdParam, 10));
+            }
+        }, 200);
+        // Timeout after 5 seconds to avoid hanging
+        setTimeout(() => clearInterval(checkAndOpen), 5000);
+    }
 
     // Use event delegation for product actions
     if (productsGrid) {

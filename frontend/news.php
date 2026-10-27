@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/news.css?v=2">
 </head>
-<body>
+<body data-page="news">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>
     <aside class="mobile-sidebar">

@@ -17,21 +17,21 @@
     align-items: center;
     gap: 8px;
     background: white !important;
-    color: #DA291C !important;
+    color: var(--accent-gold, #DAA520) !important;
     padding: 10px 20px;
     border-radius: 30px;
     text-decoration: none;
     font-weight: 700;
-    border: 2px solid #DA291C !important;
+    border: 2px solid var(--accent-gold, #DAA520) !important;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .btn-back:hover {
-    background: #DA291C !important;
-    color: white !important;
+    background: var(--accent-gold, #DAA520) !important;
+    color: var(--dark-navy, #0A192F) !important;
     transform: translateX(-5px);
-    box-shadow: 0 6px 15px rgba(218, 41, 28, 0.2);
+    box-shadow: 0 6px 15px rgba(218, 165, 32, 0.2);
 }
 
 .ticket-container {
