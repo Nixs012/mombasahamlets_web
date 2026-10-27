@@ -6,7 +6,6 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/site_helper.php';
 require_once __DIR__ . '/../includes/admin_auth_helper.php';
-require_once __DIR__ . '/../includes/file_upload_helper.php';
 
 // Enforce admin authentication for POST, PUT, DELETE
 require_admin_auth();
@@ -69,9 +68,6 @@ function handleLogoUpload($inputName) {
 
     return ['path' => null, 'error' => 'Failed to move uploaded file.'];
 }
-
-// Enforce admin authentication for POST, PUT, DELETE
-require_admin_auth();
 
 // Check if the connection variable $conn exists and is valid.
 if (!isset($conn) || (is_object($conn) && $conn->connect_error)) {
