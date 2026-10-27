@@ -101,8 +101,8 @@ function renderMatch(match) {
     const escStatusText = escapeHtml(statusText ? statusText.toUpperCase() : 'SCHEDULED');
     const escStatusClass = escapeHtml(statusClass);
 
-    const homeLogo = getImageUrl(match.home_logo);
-    const awayLogo = getImageUrl(match.away_logo);
+    const homeLogo = getImageUrl(match.home_team_logo || match.home_logo);
+    const awayLogo = getImageUrl(match.away_team_logo || match.away_logo);
 
     const score = (match.status === 'finished' || match.status === 'live') && match.home_score !== null
         ? `<span class="score-display">${escapeHtml(String(match.home_score))} - ${escapeHtml(String(match.away_score))}</span>`
@@ -164,7 +164,7 @@ function renderMatch(match) {
                     </div>
                 </div>
                 <div style="margin-top: 1rem;">
-                    <span class="match-status ${escStatusClass}" style="padding: 5px 15px; border-radius: 20px; color: white; background: var(--red); font-size: 0.8rem;">
+                    <span class="match-status ${escStatusClass}" style="padding: 5px 15px; border-radius: 20px; color: white; background: var(--accent-gold, #DAA520); font-size: 0.8rem;">
                         ${escStatusText}
                     </span>
                 </div>
@@ -195,7 +195,7 @@ function renderMatch(match) {
 
             
             <div style="text-align: center; margin-top: 3rem;">
-                <a href="matches.php" class="btn" style="background-color: var(--dark-red); color: white; padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s ease;">
+                <a href="matches.php" class="btn" style="background-color: var(--dark-navy, #0A192F); color: var(--accent-gold, #DAA520); padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s ease;">
                     <i class="fas fa-arrow-left"></i> Back to Matches
                 </a>
             </div>

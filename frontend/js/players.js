@@ -130,7 +130,7 @@ function createPlayerCard(player) {
     return `
         <div class="player-card" data-player-id="${player.id}" data-position="${escapeHtml(positionClass)}">
             <div class="player-image-container">
-                <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-image" onerror="this.src='images/logo1.jpeg'">
+                <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-image" loading="lazy" onerror="this.src='images/logo1.jpeg'">
                 <div class="player-overlay">
                     <div class="player-info-bottom">
                         <div class="player-jersey-number">${escJersey}</div>
@@ -296,7 +296,7 @@ function createPlayerModalContent(player) {
     return `
             <div class="player-details">
                 <div class="player-details-image-container">
-                    <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-details-image" onerror="this.src='images/logo1.jpeg'">
+                    <img src="${imageUrl}" alt="${escFirstName} ${escLastName}" class="player-details-image" loading="lazy" onerror="this.src='images/logo1.jpeg'">
                     <div class="player-details-number">${escJersey}</div>
                 </div>
                 <h2 class="player-details-name">${escFirstName} ${escLastName}</h2>

@@ -5,6 +5,7 @@
  */
 require_once '../db.php';
 require_once '../includes/session_config.php';
+require_once '../includes/delivery_zone_helper.php';
 
 header('Content-Type: application/json');
 
@@ -26,7 +27,7 @@ if (!$orderId) {
 
 try {
     // 2. Fetch Order Metadata & Verify Ownership
-    $orderQuery = "SELECT id, total_amount, shipping_cost, status, shipping_address, created_at FROM orders WHERE id = ? AND user_id = ?";
+    $orderQuery = "SELECT id, total_amount, shipping_cost, status, shipping_address, created_at, delivery_zone_id FROM orders WHERE id = ? AND user_id = ?";
     $stmt = $conn->prepare($orderQuery);
     $stmt->bind_param("ii", $orderId, $userId);
     $stmt->execute();
@@ -72,11 +73,28 @@ try {
     $payment = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    // 5. Response
+    // 5. Fetch delivery zone info (if exists)
+    $deliveryZoneName = null;
+    if (isset($orderData['delivery_zone_id']) && $orderData['delivery_zone_id']) {
+        $zoneQuery = "SELECT name, fee FROM delivery_zones WHERE id = ?";
+        $stmt = $conn->prepare($zoneQuery);
+        $stmt->bind_param("i", $orderData['delivery_zone_id']);
+        $stmt->execute();
+        $zoneResult = $stmt->get_result();
+        if ($zoneResult->num_rows === 1) {
+            $zoneRow = $zoneResult->fetch_assoc();
+            $deliveryZoneName = $zoneRow['name'];
+            $orderData['delivery_zone_fee'] = $zoneRow['fee'];
+        }
+        $stmt->close();
+    }
+
+    // 6. Response
     echo json_encode([
         'order' => $orderData,
         'items' => $items,
-        'payment' => $payment
+        'payment' => $payment,
+        'delivery_zone_name' => $deliveryZoneName
     ]);
 
 } catch (Exception $e) {

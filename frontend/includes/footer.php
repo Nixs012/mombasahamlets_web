@@ -10,10 +10,17 @@
             <div class="footer-links">
                 <a href="about.php">About Us</a>
                 <a href="contact.php">Contact</a>
+                <a href="delivery-info.php">Delivery Info</a>
+                <a href="refund-policy.php">Refund Policy</a>
                 <a href="privacy.php">Privacy Policy</a>
                 <a href="terms.php">Terms of Use</a>
+            </div>
+            <div class="footer-contact" style="display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 10px;">
+                <div><i class="fas fa-map-marker-alt"></i> Mombasa Hamlets Stadium, Nyali Road, Mombasa, Kenya</div>
+                <div><i class="fas fa-phone-alt"></i> +254 723 456 789</div>
+                <div><i class="fas fa-envelope"></i> info@mombasahamletsfc.co.ke</div>
             </div>
             <p>&copy; <?php echo date('Y'); ?> Mombasa Hamlets FC. All rights reserved.</p>
         </div>
     <script src="js/auto-refresh.js"></script>
-</footer>
+    </footer>

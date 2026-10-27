@@ -9,6 +9,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/paystack_helper.php';
 require_once __DIR__ . '/../includes/ticket_helper.php';
+require_once __DIR__ . '/../includes/delivery_zone_helper.php';
 
 // Get JSON data
 $data = json_decode(file_get_contents("php://input"), true);
@@ -24,6 +25,7 @@ $phone = $data['phone'] ?? '';
 $shippingAddress = $data['shipping_address'] ?? '';
 $shippingCost = $data['shipping_cost'] ?? 0;
 $userId = $_SESSION['user']['id'] ?? 0;
+$deliveryZoneId = isset($data['delivery_zone_id']) ? intval($data['delivery_zone_id']) : 0;
 
 try {
     // 1. Verify Transaction with Paystack
@@ -68,21 +70,66 @@ try {
         );
     }
 
-    // 3. Insert into orders
+    // 3. Server-side delivery zone fee validation
+    // If a delivery_zone_id was provided, verify the fee matches
+    if ($deliveryZoneId > 0) {
+        $zoneFee = get_delivery_zone_fee($conn, $deliveryZoneId);
+        if ($zoneFee === null) {
+            throw new Exception(
+                'Invalid delivery zone selected. Please try again with a valid zone.'
+            );
+        }
+        
+        // Validate that the fee matches (allow tolerance for rounding)
+        if (abs($zoneFee - $shippingCost) > 1.00) {
+            error_log(
+                "Delivery zone fee mismatch: zone_id=" . $deliveryZoneId . 
+                ", zone_fee=" . $zoneFee . 
+                ", client_fee=" . $shippingCost
+            );
+            
+            // Use the server-side fee as the authoritative fee
+            $shippingCost = $zoneFee;
+            // Recalculate expected total with corrected fee
+            $expectedTotal = $cartTotal + $shippingCost;
+            
+            // Verify again with corrected amount
+            if (abs($verifiedAmount - $expectedTotal) > 1.00) {
+                throw new Exception(
+                    'Delivery zone fee mismatch. The selected zone does not match the charged amount. ' .
+                    'Please try again or contact support.'
+                );
+            }
+        }
+    }
+
+    // 4. Insert into orders
+    // Check if delivery_zone_id column exists in orders table before using it
+    $columnCheck = $conn->query("SHOW COLUMNS FROM orders LIKE 'delivery_zone_id'");
+    $hasZoneColumn = $columnCheck && $columnCheck->num_rows > 0;
+
     $orderStatus = 'paid'; // Since we verified payment
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, shipping_cost, status, shipping_address) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("iddss", $userId, $verifiedAmount, $shippingCost, $orderStatus, $shippingAddress);
+    
+    if ($hasZoneColumn) {
+        $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, shipping_cost, shipping_address, delivery_zone_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iddsi", $userId, $verifiedAmount, $shippingCost, $shippingAddress, $deliveryZoneId > 0 ? $deliveryZoneId : null);
+    } else {
+        // Fallback: insert without delivery_zone_id (backward compatibility)
+        $stmt = $conn->prepare("INSERT INTO orders (user_id, total_amount, shipping_cost, status, shipping_address) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iddss", $userId, $verifiedAmount, $shippingCost, $orderStatus, $shippingAddress);
+    }
+    
     if (!$stmt->execute()) throw new Exception("Failed to insert order: " . $stmt->error);
     $orderId = $conn->insert_id;
     $stmt->close();
 
-    // 4. Create Admin Notification for Order
+    // 5. Create Admin Notification for Order
     $notifStmt = $conn->prepare("INSERT INTO admin_notifications (type, reference_id) VALUES ('order', ?)");
     $notifStmt->bind_param("i", $orderId);
     $notifStmt->execute();
     $notifStmt->close();
 
-    // 5. Insert into order_items
+    // 6. Insert into order_items
     $stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal, event_id, ticket_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
     foreach ($cart as $item) {
         $productId = $item['id'] ?? null;
@@ -97,7 +144,7 @@ try {
     }
     $stmt->close();
 
-    // 6. Create payment record
+    // 7. Create payment record
     $paymentStatus = 'success';
     $paymentMethod = 'Paystack';
     $stmt = $conn->prepare("INSERT INTO payments (order_id, reference, amount, payment_method, status, payment_date) VALUES (?, ?, ?, ?, ?, NOW())");
@@ -106,19 +153,19 @@ try {
     $paymentId = $conn->insert_id;
     $stmt->close();
 
-    // 7. Create Admin Notification for Payment
+    // 8. Create Admin Notification for Payment
     $notifStmt = $conn->prepare("INSERT INTO admin_notifications (type, reference_id) VALUES ('payment', ?)");
     $notifStmt->bind_param("i", $paymentId);
     $notifStmt->execute();
     $notifStmt->close();
 
-    // 8. Generate Tickets (if any items were tickets)
+    // 9. Generate Tickets (if any items were tickets)
     TicketHelper::generateTicketsForOrder($orderId, $conn);
 
     // Commit Transaction
     $conn->commit();
 
-    // 9. Clear Cart
+    // 10. Clear Cart
     unset($_SESSION['cart']);
 
     echo json_encode([

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const eventId = params.get('event_id');
     const apiUrl = window.API_URL || '/mombasahamlets_web/backend/api';
+    const zoneOptionsContainer = document.getElementById('delivery-zone-options');
 
     if (!eventId) {
         window.location.href = 'events.php';
@@ -21,6 +22,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let ticketTypesData = [];
     let selectedQuantities = {};
+    let deliveryZoneFee = 0;
+
+    // 0. Fetch Delivery Zones
+    async function loadDeliveryZones() {
+        try {
+            const response = await fetch(`${apiUrl}/delivery_zones.php`);
+            if (!response.ok) throw new Error('Failed to fetch zones');
+            const zones = await response.json();
+            
+            if (Array.isArray(zones) && zones.length > 0) {
+                zoneOptionsContainer.innerHTML = zones.map(zone => `
+                    <label class="zone-option" data-zone-id="${zone.id}">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <input type="radio" name="delivery_zone" value="${zone.id}" ${zone.fee == 0 ? 'checked' : ''}>
+                            <span class="zone-name">${escapeHtml(zone.name)}</span>
+                        </div>
+                        <span class="zone-fee">KSh ${parseFloat(zone.fee).toFixed(2)}</span>
+                    </label>
+                `).join('');
+
+                // Set Shop Pickup as default if present, else first zone
+                const pickupOption = zoneOptionsContainer.querySelector('input[value][data-zone-id]');
+                if (pickupOption) {
+                    const shopOption = Array.from(zoneOptionsContainer.querySelectorAll('.zone-option'))
+                        .find(opt => opt.querySelector('.zone-name').textContent.includes('Shop Pickup'));
+                    if (shopOption) {
+                        shopOption.querySelector('input').checked = true;
+                        shopOption.classList.add('selected');
+                        const zoneId = shopOption.querySelector('input').value;
+                        const zone = zones.find(z => z.id == zoneId);
+                        deliveryZoneFee = parseFloat(zone.fee);
+                        document.getElementById('delivery_zone_id').value = zoneId;
+                        document.getElementById('delivery_zone_fee').value = deliveryZoneFee;
+                    }
+                }
+
+                // Add event listeners
+                zoneOptionsContainer.querySelectorAll('input[name="delivery_zone"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        zoneOptionsContainer.querySelectorAll('.zone-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.closest('.zone-option').classList.add('selected');
+                        
+                        const zoneId = this.value;
+                        const zone = zones.find(z => z.id == zoneId);
+                        deliveryZoneFee = zone ? parseFloat(zone.fee) : 0;
+                        document.getElementById('delivery_zone_id').value = zoneId;
+                        document.getElementById('delivery_zone_fee').value = deliveryZoneFee;
+                        
+                        // For tickets, total doesn't include delivery fee, but we track it
+                        calculateTotal();
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('Error loading delivery zones:', error);
+            // Fallback: just set fee to 0 if zones fail to load
+            deliveryZoneFee = 0;
+        }
+    }
+
+    loadDeliveryZones();
 
     // 1. Fetch Event Details
     fetch(`${apiUrl}/events.php?id=${eventId}`)
@@ -103,85 +167,91 @@ document.addEventListener('DOMContentLoaded', function () {
             totalQty += qty;
         });
 
+        // Include delivery zone fee in the total for tickets
+        total += deliveryZoneFee;
+
         grandTotalElement.textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
         btnTotalElement.textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
         submitBtn.disabled = (totalQty === 0);
     }
 
-    // 3. Handle Submission
-    checkoutForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
+        // 3. Handle Submission
+        checkoutForm.addEventListener('submit', async function (e) {
+                       e.preventDefault();
 
-        const cart = [];
-        ticketTypesData.forEach(type => {
-            const qty = selectedQuantities[type.id] || 0;
-            if (qty > 0) {
-                cart.push({
-                    id: null, // Product ID is null for tickets
-                    name: `${eventTitle.textContent} - ${type.name}`,
-                    price: parseFloat(type.price),
-                    quantity: qty,
-                    event_id: parseInt(eventId),
-                    ticket_type_id: parseInt(type.id)
+            const cart = [];
+            ticketTypesData.forEach(type => {
+                const qty = selectedQuantities[type.id] || 0;
+                if (qty > 0) {
+                    cart.push({
+                        id: null, // Product ID is null for tickets
+                        name: `${eventTitle.textContent} - ${type.name}`,
+                        price: parseFloat(type.price),
+                        quantity: qty,
+                        event_id: parseInt(eventId),
+                        ticket_type_id: parseInt(type.id)
+                    });
+                }
+            });
+
+            if (cart.length === 0) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                // 1. First Sync Cart
+                const syncResponse = await fetch(`${apiUrl}/sync_cart.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cart: cart, token: localStorage.getItem('userToken') })
                 });
+
+                if (!syncResponse.ok) throw new Error('Sync failed');
+
+                // 2. Open Paystack Inline
+                const fullName = document.getElementById('full_name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('shipping_address').value || 'Digital Ticket';
+                const totalAmount = parseFloat(grandTotalElement.textContent.replace(/,/g, ''));
+                const selectedZoneId = document.getElementById('delivery_zone_id')?.value || null;
+                const zoneFee = parseFloat(document.getElementById('delivery_zone_fee')?.value || 0);
+
+                const handler = PaystackPop.setup({
+                    key: window.paystackPublicKey || 'pk_test_placeholder',
+                    email: email,
+                    amount: totalAmount * 100, // Kobo
+                    currency: 'KES',
+                    ref: 'TIX-' + Math.floor((Math.random() * 1000000000) + 1),
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Full Name", variable_name: "full_name", value: fullName },
+                            { display_name: "Phone Number", variable_name: "phone", value: phone },
+                            { display_name: "Order Type", variable_name: "order_type", value: "tickets" },
+                            { display_name: "Delivery Zone ID", variable_name: "delivery_zone_id", value: selectedZoneId || '' }
+                        ]
+                    },
+                    callback: function (response) {
+                        // 3. Verify on backend
+                        const reference = response.reference;
+                        submitTicketOrder(reference, fullName, phone, email, address, totalAmount, selectedZoneId);
+                    },
+                    onClose: function () {
+                        alert('Transaction cancelled.');
+                        resetSubmitBtn(totalAmount);
+                    }
+                });
+                handler.openIframe();
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('There was an error processing your checkout. Please try again.');
+                resetSubmitBtn(parseFloat(grandTotalElement.textContent.replace(/,/g, '')));
             }
         });
 
-        if (cart.length === 0) return;
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-        try {
-            // 1. First Sync Cart
-            const syncResponse = await fetch(`${apiUrl}/sync_cart.php`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cart: cart, token: localStorage.getItem('userToken') })
-            });
-
-            if (!syncResponse.ok) throw new Error('Sync failed');
-
-            // 2. Open Paystack Inline
-            const fullName = document.getElementById('full_name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('shipping_address').value || 'Digital Ticket';
-            const totalAmount = parseFloat(grandTotalElement.textContent.replace(/,/g, ''));
-
-            const handler = PaystackPop.setup({
-                key: window.paystackPublicKey || 'pk_test_placeholder',
-                email: email,
-                amount: totalAmount * 100, // Kobo
-                currency: 'KES',
-                ref: 'TIX-' + Math.floor((Math.random() * 1000000000) + 1),
-                metadata: {
-                    custom_fields: [
-                        { display_name: "Full Name", variable_name: "full_name", value: fullName },
-                        { display_name: "Phone Number", variable_name: "phone", value: phone },
-                        { display_name: "Order Type", variable_name: "order_type", value: "tickets" }
-                    ]
-                },
-                callback: function (response) {
-                    // 3. Verify on backend
-                    const reference = response.reference;
-                    submitTicketOrder(reference, fullName, phone, email, address, totalAmount);
-                },
-                onClose: function () {
-                    alert('Transaction cancelled.');
-                    resetSubmitBtn(totalAmount);
-                }
-            });
-            handler.openIframe();
-
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('There was an error processing your checkout. Please try again.');
-            resetSubmitBtn(parseFloat(grandTotalElement.textContent.replace(/,/g, '')));
-        }
-    });
-
-    async function submitTicketOrder(reference, fullName, phone, email, address, totalAmount) {
+    async function submitTicketOrder(reference, fullName, phone, email, address, totalAmount, selectedZoneId) {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finalizing...';
 
         try {
@@ -194,7 +264,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     phone: phone,
                     email: email, // Passing email here too
                     shipping_address: address,
-                    shipping_cost: 0 // No shipping for tickets
+                    shipping_cost: deliveryZoneFee, // Include delivery zone fee for tickets
+                    delivery_zone_id: selectedZoneId ? parseInt(selectedZoneId) : null,
+                    order_type: 'tickets'
                 })
             });
 

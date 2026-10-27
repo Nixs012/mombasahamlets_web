@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Products grid not found.');
             return;
         }
-        productsGrid.innerHTML = '<div class="loading-spinner"></div><p class="loading-text">Loading Products...</p>';
+        productsGrid.innerHTML = '<div class="products-loading"><div class="skeleton-grid"></div></div>';
 
         try {
             // Use the global API_URL from api-config.js, or fallback to relative path
@@ -141,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = listItem.querySelector('img');
             img.alt = item.name;
 
-            // Set cart meta (quantity x price) via textContent
-            const price = item.sale_price ? item.sale_price : item.price;
+             // Set cart meta (quantity x price) via textContent
             listItem.querySelector('.cart-item-meta').textContent = `${item.quantity} x KSh ${(price || 0).toFixed(2)}`;
 
             if (item.selectedSize) {
@@ -308,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             productCard.innerHTML = `
                 <div class="product-image-container">
-                    <img src="${imageUrl}" alt="" class="product-image" onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
+                    <img src="${imageUrl}" alt="" class="product-image" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
                     ${isOnSale ? '<span class="sale-badge">Sale</span>' : ''}
                     <div class="product-actions">
                         <button class="action-btn quick-view-btn" aria-label="Quick View" data-product-id="${product.id}"><i class="fas fa-eye"></i></button>
@@ -372,6 +371,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial fetch
     fetchProducts();
+
+    // Check for ?product=X query param to open quick view on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const productIdParam = urlParams.get('product');
+    if (productIdParam) {
+        // Wait for products to load before opening quick view
+        const checkAndOpen = setInterval(() => {
+            if (allProducts.length > 0) {
+                clearInterval(checkAndOpen);
+                window.showQuickView(parseInt(productIdParam, 10));
+            }
+        }, 200);
+        // Timeout after 5 seconds to avoid hanging
+        setTimeout(() => clearInterval(checkAndOpen), 5000);
+    }
 
     // Use event delegation for product actions
     if (productsGrid) {
@@ -452,6 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imgPath) imageUrl = imgPath;
         }
         modalImg.src = imageUrl;
+        modalImg.alt = product.name;
+        modalImg.loading = 'lazy';
 
         const isOnSale = product.sale_price && product.sale_price < product.price;
         const salePriceStr = (product.sale_price || 0).toFixed(2);

@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', function () {
     checkAndLoadNews();
     // Load official partners
     checkAndLoadPartners();
+    // Load next match countdown
+    loadNextMatch();
+    // Load featured players
+    loadFeaturedPlayers();
+    // Load shop highlights
+    loadFeaturedProducts();
     setupScrollAnimations();
     setupNewsletter();
 });
@@ -269,16 +275,18 @@ async function loadLatestNews() {
     try {
         const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
         console.log('Fetching news from:', `${apiUrl}/news.php`);
-        const response = await fetch(`${apiUrl}/news.php`);
+        const response = await fetch(`${apiUrl}/news.php?limit=4`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const articles = await response.json();
+        const result = await response.json();
+        // Handle both paginated (data + pagination) and non-paginated (raw array) responses
+        const articles = Array.isArray(result) ? result : (result.data || []);
         console.log('Received articles:', articles.length);
 
-        if (!Array.isArray(articles) || articles.length === 0) {
+        if (!articles.length) {
             newsGrid.innerHTML = '<p>No news articles available at the moment.</p>';
             return;
         }
@@ -316,7 +324,7 @@ async function loadLatestNews() {
                     <div class="article-content" style="contain: content;">
                         <div class="article-date">${formattedDate} | ${article.category || 'General'}</div>
                         <h2 class="article-title">${article.title}</h2>
-                        <p class="article-excerpt">${article.summary || article.content?.substring(0, 150) + '...' || 'Read more about this story.'}</p>
+                        <p class="article-excerpt">${article.summary || (article.content ? article.content.substring(0, 150) + '...' : 'Read more about this story.')}</p>
                         <a href="news-single.php?id=${article.id}" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </article>
@@ -332,8 +340,8 @@ async function loadLatestNews() {
  * Loads and displays official partners on the homepage
  */
 async function loadPartners() {
-    const partnersGrid = document.getElementById('partners-grid');
-    if (!partnersGrid) return;
+    const partnersStrip = document.getElementById('partners-strip');
+    if (!partnersStrip) return;
 
     try {
         const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
@@ -343,26 +351,24 @@ async function loadPartners() {
 
         const partners = await response.json();
         if (!Array.isArray(partners) || partners.length === 0) {
-            partnersGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.5); padding: 2rem;">No official partners available at the moment.</p>';
+            partnersStrip.innerHTML = '<p style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.7);">No official partners available at the moment.</p>';
             return;
         }
 
         const fallbackImagePath = '/mombasahamlets_web/frontend/images/logo1.jpeg';
 
-        partnersGrid.innerHTML = partners.map((partner, index) => {
+        // Create marquee strip by duplicating partners for continuous scroll
+        const partnerItems = partners.map(partner => {
             let logoUrl = fallbackImagePath;
             if (partner.logo_url && partner.logo_url.trim()) {
                 let imgPath = partner.logo_url.trim();
-                // If it's a full URL, use it
                 if (/^https?:\/\//i.test(imgPath)) {
                     logoUrl = imgPath;
                 } else {
-                    // Clean up paths that might start with / or the project root
                     imgPath = imgPath.replace(/^\/mombasahamlets_web\//, '');
                     imgPath = imgPath.replace(/^\/?frontend\//, '');
                     imgPath = imgPath.replace(/^\//, '');
 
-                    // If it doesn't already start with images/, and it's not empty, it's likely in images/
                     if (imgPath && !imgPath.startsWith('images/')) {
                         imgPath = 'images/' + imgPath;
                     }
@@ -376,14 +382,25 @@ async function loadPartners() {
             const websiteUrl = partner.website_url ? (partner.website_url.startsWith('http') ? partner.website_url : `https://${partner.website_url}`) : '#';
 
             return `
-                <div class="sponsor-item-wrapper reveal-on-scroll" style="transition-delay: ${index * 100}ms">
-                    <a href="${websiteUrl}" target="_blank" class="sponsor-item" ${partner.website_url ? '' : 'style="cursor: default; pointer-events: auto;" onclick="return false;"'}>
-                        <img src="${logoUrl}" alt="${partner.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackImagePath}';">
-                        <span class="sponsor-category">${partner.category}</span>
+                <div class="sponsor-marquee-item">
+                    <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer">
+                        <img src="${logoUrl}" alt="${partner.name}" loading="lazy"
+                             onerror="this.onerror=null; this.src='${fallbackImagePath}';">
                     </a>
                 </div>
             `;
         }).join('');
+
+        // Duplicate items for continuous scrolling effect
+        const allItems = partnerItems + partnerItems;
+        partnersStrip.innerHTML = `<div class="sponsors-marquee-container">${allItems}</div>`;
+
+        // Auto-pause marquee on hover
+        const container = partnersStrip.querySelector('.sponsors-marquee-container');
+        if (container) {
+            container.addEventListener('mouseenter', () => container.style.animationPlayState = 'paused');
+            container.addEventListener('mouseleave', () => container.style.animationPlayState = 'running');
+        }
 
         // Trigger observer after content is added
         setupScrollAnimations();
@@ -422,8 +439,10 @@ function setupScrollAnimations() {
  * Checks if the partners grid exists and loads partners
  */
 function checkAndLoadPartners() {
+    // Check for either the partners grid (news page) or the partners strip (home page)
     const partnersGrid = document.getElementById('partners-grid');
-    if (partnersGrid) {
+    const partnersStrip = document.getElementById('partners-strip');
+    if (partnersGrid || partnersStrip) {
         loadPartners();
     }
 }
@@ -461,7 +480,8 @@ function setupNewsletter() {
         messageDiv.style.display = 'none';
 
         try {
-            const response = await fetch('/mombasahamlets_web/backend/subscribe.php', {
+            const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
+            const response = await fetch(`${apiUrl.replace('/api', '')}/subscribe.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -498,3 +518,191 @@ function setupNewsletter() {
         }
     });
 }
+
+/**
+ * Loads the next upcoming match and sets up a countdown timer
+ */
+async function loadNextMatch() {
+    const countdownEl = document.getElementById('next-match-countdown');
+    const timerEl = document.getElementById('countdown-timer');
+    const teamsEl = document.getElementById('next-match-teams');
+    const venueEl = document.getElementById('next-match-venue');
+
+    if (!countdownEl || !timerEl) return;
+
+    try {
+        const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
+        const response = await fetch(`${apiUrl}/matches.php?status=upcoming&limit=1`);
+        const result = await response.json();
+        const matches = Array.isArray(result) ? result : (result.data || []);
+
+        if (matches.length > 0) {
+            const match = matches[0];
+            if (teamsEl) teamsEl.textContent = `${match.home_team} vs ${match.away_team}`;
+            if (venueEl) venueEl.textContent = match.venue || 'TBA';
+
+            // Show the match info container (was hidden by default)
+            const matchInfoEl = document.getElementById('next-match-info');
+            if (matchInfoEl) matchInfoEl.style.display = 'flex';
+
+            const matchDate = new Date(match.match_date);
+            startCountdown(matchDate);
+        } else {
+            if (teamsEl) teamsEl.textContent = 'No upcoming matches scheduled';
+            if (timerEl) timerEl.innerHTML = '<span>No match scheduled</span>';
+        }
+    } catch (error) {
+        console.error('Failed to load next match:', error);
+        if (timerEl) timerEl.innerHTML = '<span>Check back soon</span>';
+    }
+}
+
+/**
+ * Starts a countdown timer to a specific date
+ */
+function startCountdown(targetDate) {
+    const updateCountdown = () => {
+        const now = new Date();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+            document.getElementById('countdown-days').textContent = '00';
+            document.getElementById('countdown-hours').textContent = '00';
+            document.getElementById('countdown-minutes').textContent = '00';
+            document.getElementById('countdown-seconds').textContent = '00';
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('countdown-days').textContent = String(days).padStart(2, '0');
+        document.getElementById('countdown-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('countdown-minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('countdown-seconds').textContent = String(seconds).padStart(2, '0');
+    };
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
+
+/**
+ * Loads and displays featured players on the homepage
+ */
+async function loadFeaturedPlayers() {
+    const playersGrid = document.getElementById('featured-players-grid');
+    if (!playersGrid) return;
+
+    try {
+        const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
+        const response = await fetch(`${apiUrl}/players.php?status=active&limit=4`);
+        const result = await response.json();
+        const players = Array.isArray(result) ? result : (result.data || []);
+
+        if (!players.length) {
+            playersGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">No featured players at the moment.</p>';
+            return;
+        }
+
+        playersGrid.innerHTML = players.slice(0, 4).map(player => {
+            const fallbackImage = '/mombasahamlets_web/frontend/images/logo1.jpeg';
+            let imageUrl = fallbackImage;
+            if (player.image_url && player.image_url.trim()) {
+                imageUrl = player.image_url.trim().replace(/^\/mombasahamlets_web\//, '').replace(/^\/?frontend\//, '').replace(/^\//, '');
+                if (imageUrl) {
+                    imageUrl = `/mombasahamlets_web/frontend/${imageUrl}`;
+                }
+            }
+            return `
+            <div class="player-card" data-player-id="${player.id}">
+                <div class="player-image-container">
+                    <img src="${imageUrl}"
+                         alt="${player.first_name} ${player.last_name} - Mombasa Hamlets FC Player"
+                         class="player-photo"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='${fallbackImage}';">
+                </div>
+                <div class="player-info">
+                    <div class="player-number">#${player.jersey_number || '--'}</div>
+                    <h3 class="player-name">${player.first_name} ${player.last_name}</h3>
+                    <div class="player-position">${player.position || 'Position'}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    } catch (error) {
+        console.error('Failed to load featured players:', error);
+        playersGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Could not load featured players. Please try again later.</p>';
+    }
+}
+
+/**
+ * Loads and displays featured products on the homepage
+ */
+async function loadFeaturedProducts() {
+    const productsGrid = document.getElementById('shop-highlights-grid');
+    if (!productsGrid) return;
+
+    try {
+        const apiUrl = window.API_URL || 'http://localhost/mombasahamlets_web/backend/api';
+        const response = await fetch(`${apiUrl}/products.php?featured=true&limit=4`);
+        const result = await response.json();
+        const products = Array.isArray(result) ? result : (result.data || []);
+
+        if (!products.length) {
+            productsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">No products available at the moment.</p>';
+            return;
+        }
+
+        const fallbackImage = '/mombasahamlets_web/frontend/images/logo1.jpeg';
+
+        productsGrid.innerHTML = products.slice(0, 4).map(product => {
+            let imageUrl = fallbackImage;
+            if (product.image_url && product.image_url.trim()) {
+                let imgPath = product.image_url.trim();
+                imgPath = imgPath.replace(/^\/mombasahamlets_web\//, '').replace(/^\/?frontend\//, '').replace(/^\//, '');
+                if (imgPath && imgPath.length > 0) {
+                    imageUrl = `/mombasahamlets_web/frontend/${imgPath}`;
+                }
+            }
+            return `
+            <div class="shop-product-card" data-product-id="${product.id}">
+                <div class="product-image-container">
+                    <img src="${imageUrl}"
+                         alt="${product.name} - KSh ${product.price}"
+                         class="product-image"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='${fallbackImage}';">
+                    ${product.featured ? '<span class="product-badge">Featured</span>' : ''}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-price">
+                        <span class="price">KSh ${product.price}</span>
+                        ${product.sale_price ? `<span class="sale-price">KSh ${product.sale_price}</span>` : ''}
+                    </div>
+                    <button class="quick-view-btn" onclick="quickView(${product.id})" aria-label="Quick view ${product.name}">
+                        <i class="fas fa-eye"></i> Quick View
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    } catch (error) {
+        console.error('Failed to load featured products:', error);
+        productsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Could not load products. Please try again later.</p>';
+    }
+}
+
+/**
+ * Opens quick view modal for a product
+ */
+function quickView(productId) {
+    // Redirect to product page
+    window.location.href = `shop.php?product=${productId}`;
+}
+
+// Expose quickView to global scope for inline onclick handlers
+window.quickView = quickView;

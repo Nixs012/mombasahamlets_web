@@ -13,6 +13,7 @@ frontend/check_db.php
 # === DATABASE DUMPS — NEVER IN WEB ROOT ===
 *.sql
 !mombasa_hamlets_setup.sql
+!backend/migration_*.sql
 *.sql.gz
 frontend/import_db.bat
 
@@ -48,3 +49,6 @@ Thumbs.db
 # === ENVIRONMENT ===
 .env
 .env.local
+
+# === SANDBOX TEMPLATE (keep tracked but git-protected) ===
+backend/.env

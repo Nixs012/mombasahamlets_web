@@ -163,10 +163,13 @@ function createMatchCard(match) {
 
     const homeTeam = match.home_team || 'Home Team';
     const awayTeam = match.away_team || 'Away Team';
-    const genericLogo = 'images/logo1.jpeg';
-
-    const homeLogo = getImageUrl(match.home_logo);
-    const awayLogo = getImageUrl(match.away_logo);
+    
+    // Home team: use uploaded logo, fallback to Mombasa Hamlets logo
+    const homeLogo = getImageUrl(match.home_team_logo || match.home_logo);
+    
+    // Away team: use uploaded logo, fallback to neutral placeholder
+    const awayPlaceholder = 'images/placeholder-team.svg';
+    const awayLogo = getImageUrl(match.away_team_logo || match.away_logo) || awayPlaceholder;
 
     let venueIndicator = '';
     if (isMombasa(homeTeam)) venueIndicator = '(H)';
@@ -195,7 +198,8 @@ function createMatchCard(match) {
             </div>
             <div class="match-content">
                 <div class="team team-home">
-                    <img src="${homeLogo}" alt="${escHomeTeam}" class="team-logo">
+                    <img src="${homeLogo}" alt="${escHomeTeam} logo" class="team-logo" loading="lazy"
+                         onerror="this.onerror=null; this.src='images/logo1.jpeg';">
                     <span class="team-name">${escHomeTeam}</span>
                 </div>
                 <div class="match-vs">
@@ -203,13 +207,14 @@ function createMatchCard(match) {
                     <div class="match-status ${escStatusClass}">${escStatusText}</div>
                 </div>
                 <div class="team team-away">
-                    <img src="${awayLogo}" alt="${escAwayTeam}" class="team-logo">
+                    <img src="${awayLogo}" alt="${escAwayTeam} logo" class="team-logo" loading="lazy"
+                         onerror="this.onerror=null; this.src='images/logo1.jpeg';">
                     <span class="team-name">${escAwayTeam}</span>
                 </div>
             </div>
             <div class="match-info">
                 <span class="match-venue"> 
-                    <i class="fas fa-map-marker-alt"></i> ${escVenue} ${escapeHtml(venueIndicator)}
+                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escVenue} ${escapeHtml(venueIndicator)}
                 </span>
                 <a href="match-preview.php?id=${matchId}" class="match-preview">
                     ${match.status === 'finished' ? 'Match Report' : 'Preview'} <i class="fas fa-arrow-right"></i>

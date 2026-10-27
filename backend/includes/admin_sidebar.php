@@ -12,7 +12,8 @@
             <li><a href="admin.php?tab=news" data-tab="news"><i class="fas fa-newspaper"></i> <span>News</span></a></li>
             <li><a href="admin.php?tab=matches" data-tab="matches"><i class="fas fa-calendar-alt"></i> <span>Matches</span></a></li>
             <li><a href="admin.php?tab=players" data-tab="players"><i class="fas fa-users"></i> <span>Players</span></a></li>
-            <li><a href="admin_orders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admin_orders.php' ? 'active' : ''; ?>"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+            <li><a href="admin_orders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admin_orders.php' || basename($_SERVER['PHP_SELF']) == 'admin_order_update.php' || basename($_SERVER['PHP_SELF']) == 'admin_order_view.php' ? 'active' : ''; ?>"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+            <li><a href="admin_delivery_zones.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admin_delivery_zones.php' || basename($_SERVER['PHP_SELF']) == 'admin_delivery_zone_edit.php' ? 'active' : ''; ?>"><i class="fas fa-truck"></i> <span>Delivery Zones</span></a></li>
             <li><a href="admin_payments.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'admin_payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
             <li><a href="admin.php?tab=shop" data-tab="shop"><i class="fas fa-shopping-cart"></i> <span>Shop</span></a></li>
             <li><a href="admin.php?tab=events" data-tab="events"><i class="fas fa-calendar-check"></i> <span>Events</span></a></li>

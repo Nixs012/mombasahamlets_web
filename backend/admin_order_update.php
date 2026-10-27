@@ -83,20 +83,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="admin-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <img src="/mombasahamlets_web/frontend/images/29.jpg" alt="Mombasa Hamlets Logo">
-                <h2>Admin</h2>
+                <div class="sidebar-avatar-container">
+                    <img src="/mombasahamlets_web/frontend/images/29.jpg" alt="Mombasa Hamlets Logo" />
+                </div>
+                <h3>Admin</h3>
             </div>
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="admin.php"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="admin_orders.php" class="active"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+                    <li><a href="admin_orders.php"><i class="fas fa-shopping-bag"></i> <span>Orders</span></a></li>
+                    <li><a href="admin_delivery_zones.php"><i class="fas fa-truck"></i> <span>Delivery Zones</span></a></li>
                     <li><a href="admin_payments.php"><i class="fas fa-credit-card"></i> <span>Payments</span></a></li>
-                    <li><a href="admin.php#news" data-tab="news"><i class="fas fa-newspaper"></i> <span>News</span></a></li>
-                    <li><a href="admin.php#matches" data-tab="matches"><i class="fas fa-calendar-alt"></i> <span>Matches</span></a></li>
-                    <li><a href="admin.php#players" data-tab="players"><i class="fas fa-users"></i> <span>Players</span></a></li>
-                    <li><a href="admin.php#shop" data-tab="shop"><i class="fas fa-shopping-cart"></i> <span>Shop</span></a></li>
-                    <li><a href="admin.php#events" data-tab="events"><i class="fas fa-calendar-check"></i> <span>Events</span></a></li>
-                    <li><a href="admin.php#media" data-tab="media"><i class="fas fa-photo-video"></i> <span>Media</span></a></li>
+                    <li><a href="admin.php?tab=shop" data-tab="shop"><i class="fas fa-shopping-cart"></i> <span>Shop</span></a></li>
+                    <li><a href="admin.php?tab=events" data-tab="events"><i class="fas fa-calendar-check"></i> <span>Events</span></a></li>
+                    <li><a href="admin.php?tab=media" data-tab="media"><i class="fas fa-photo-video"></i> <span>Media</span></a></li>
                 </ul>
             </nav>
         </aside>

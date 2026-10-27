@@ -103,8 +103,8 @@
 }
 
 .step.active .step-circle {
-    background: #DA291C;
-    color: white;
+    background: var(--accent-gold, #DAA520);
+    color: var(--dark-navy, #0A192F);
 }
 
 .step.completed .step-circle {
