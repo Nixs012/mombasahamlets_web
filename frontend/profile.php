@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - Mombasa Hamlets</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/user.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'User Profile - Mombasa Hamlets FC';
+$pageDescription = 'Manage your Mombasa Hamlets FC profile. Update personal information and security settings.';
+$pageImage = 'images/logo1.webp';
+$extraCss = ['css/user.css'];
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="profile">
     
     <div class="profile-container">

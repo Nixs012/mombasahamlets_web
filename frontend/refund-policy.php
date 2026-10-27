@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refund & Returns Policy - Mombasa Hamlets FC</title>
-    <meta name="description"
-        content="Read Mombasa Hamlets FC refund and returns policy for online purchases. Understand your rights and the process for returns and refunds.">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-</head>
-
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Refund Policy - Mombasa Hamlets FC';
+$pageDescription = 'Mombasa Hamlets FC refund policy for merchandise and ticket purchases. Terms and conditions.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="refund">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

@@ -10,56 +10,13 @@ if (!$eventId) {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Checkout - Mombasa Hamlets FC</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-        .checkout-container { max-width: 1000px; margin: 40px auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .checkout-header { text-align: center; margin-bottom: 40px; }
-        .order-summary { background: var(--card-bg, #f8f9fa); padding: 25px; border-radius: 12px; height: fit-content; }
-        .order-summary h3 { margin-top: 0; padding-bottom: 15px; border-bottom: 1px solid var(--border-color, #dee2e6); }
-        .ticket-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .ticket-info { flex: 1; }
-        .ticket-name { font-weight: 600; display: block; font-size: 1.1em; color: var(--dark-navy, #0A192F); }
-        .ticket-price { color: var(--text-secondary, #666); font-size: 0.95em; }
-        .quantity-controls { display: flex; align-items: center; gap: 10px; }
-        .qty-btn { background: var(--border-color, #eee); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .qty-btn:hover { background: var(--accent-gold, #DAA520); }
-        .qty-input { width: 40px; text-align: center; border: 1px solid var(--border-color, #ddd); border-radius: 4px; padding: 4px; font-weight: 600; }
-        .order-total { font-size: 1.4em; font-weight: 700; display: flex; justify-content: space-between; margin-top: 30px; color: var(--accent-gold, #DAA520); padding-top: 20px; border-top: 2px solid var(--border-color, #ddd); }
-        
-        .checkout-form { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark-navy, #0A192F); }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; font-size: 16px; font-family: 'Open Sans', sans-serif; }
-        .btn-pay { background: var(--accent-gold, #DAA520); color: var(--dark-navy, #0A192F); border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: background 0.3s; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-pay:hover:not(:disabled) { background: var(--primary-blue, #003366); color: white; }
-
-        .event-mini-card { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
-        .event-mini-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
-        .event-mini-details h4 { margin: 0; font-size: 1.1em; }
-        .event-mini-details p { margin: 5px 0 0; font-size: 0.9em; color: var(--text-secondary, #666); }
-
-        /* Delivery Zone Selection */
-        .delivery-zone-selector { border: 2px solid var(--border-color, #dee2e6); border-radius: 12px; padding: 20px; margin: 20px 0; background: var(--card-bg, #f8f9fa); }
-        .delivery-zone-selector h4 { margin-top: 0; color: var(--dark-navy, #0A192F); display: flex; align-items: center; gap: 10px; }
-        .delivery-zone-options { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .zone-option { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; }
-        .zone-option:hover { border-color: var(--primary-blue, #003366); background: var(--off-white, #f8f9fa); }
-        .zone-option.selected { border-color: var(--primary-blue, #003366); background: rgba(0, 51, 102, 0.05); }
-        .zone-option input[type="radio"] { margin-right: 12px; accent-color: var(--primary-blue, #003366); cursor: pointer; }
-        .zone-option .zone-name { font-weight: 600; flex: 1; }
-        .zone-option .zone-fee { background: var(--primary-blue, #003366); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9em; }
-        
-        @media (max-width: 768px) { .checkout-container { grid-template-columns: 1fr; } }
-    </style>
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Ticket Checkout - Mombasa Hamlets FC';
+$pageDescription = 'Complete your ticket purchase for Mombasa Hamlets FC match. Secure payment via M-Pesa.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body>
     <header class="header">
         <div class="logo">

@@ -2,23 +2,14 @@
 require_once __DIR__ . '/../backend/includes/session_config.php';
 // Removed PHP-only redirect to allow JWT/localStorage authentication to take precedence via JS.
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard - Mombasa Hamlets FC</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=1.2">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script>
-        // CLIENT-SIDE AUTH CHECK: Redirect if no token is found in localStorage
-        if (!localStorage.getItem('userToken')) {
-            window.location.href = 'login.php?redirect=dashboard.php';
-        }
-    </script>
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'My Dashboard - Mombasa Hamlets FC';
+$pageDescription = 'View your orders and event tickets. Manage your Mombasa Hamlets FC account dashboard.';
+$pageImage = 'images/logo1.webp';
+$extraCss = ['css/dashboard.css'];
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body>
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

@@ -27,51 +27,13 @@ foreach ($cart as $item) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Mombasa Hamlets FC</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        .checkout-container { max-width: 1000px; margin: 40px auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .checkout-header { text-align: center; margin-bottom: 40px; }
-        .order-summary { background: var(--card-bg, #f8f9fa); padding: 25px; border-radius: 12px; height: fit-content; }
-        .order-summary h3 { margin-top: 0; padding-bottom: 15px; border-bottom: 1px solid var(--border-color, #dee2e6); }
-        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color, #dee2e6); }
-        .cart-item-info { flex: 1; }
-        .cart-item-name { font-weight: 600; display: block; }
-        .cart-item-meta { font-size: 0.9em; color: var(--text-secondary, #666); }
-        .order-total { font-size: 1.25em; font-weight: 700; display: flex; justify-content: space-between; margin-top: 20px; color: var(--primary-blue, #003366); }
-        
-        .checkout-form { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark-navy, #0A192F); }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color, #ddd); border-radius: 8px; font-size: 16px; font-family: 'Open Sans', sans-serif; }
-        .btn-place-order { background: var(--primary-blue, #003366); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
-        .btn-place-order:hover { background: var(--accent-gold, #DAA520); }
-        .btn-place-order:disabled { background: var(--text-secondary, #999); cursor: not-allowed; }
-        
-        /* Delivery Zone Selection */
-        .delivery-zone-selector { border: 2px solid var(--border-color, #dee2e6); border-radius: 12px; padding: 20px; margin: 20px 0; background: var(--card-bg, #f8f9fa); }
-        .delivery-zone-selector h4 { margin-top: 0; color: var(--dark-navy, #0A192F); display: flex; align-items: center; gap: 10px; }
-        .delivery-zone-options { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .zone-option { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; }
-        .zone-option:hover { border-color: var(--primary-blue, #003366); background: var(--off-white, #f8f9fa); }
-        .zone-option.selected { border-color: var(--primary-blue, #003366); background: rgba(0, 51, 102, 0.05); }
-        .zone-option input[type="radio"] { margin-right: 12px; accent-color: var(--primary-blue, #003366); cursor: pointer; }
-        .zone-option .zone-name { font-weight: 600; flex: 1; }
-        .zone-option .zone-fee { background: var(--primary-blue, #003366); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9em; }
-        
-        @media (max-width: 768px) { 
-            .checkout-container { grid-template-columns: 1fr; }
-            .delivery-zone-options { flex-direction: column; }
-        }
-    </style>
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Checkout - Mombasa Hamlets FC';
+$pageDescription = 'Complete your order for Mombasa Hamlets FC merchandise. Secure payment via M-Pesa. Delivery available across Kenya.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body>
     <!-- Simple Header -->
     <header class="header">

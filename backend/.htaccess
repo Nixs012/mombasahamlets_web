@@ -1,3 +1,7 @@
+# ===================================================================
+# Backend .htaccess
+# ===================================================================
+
 # Set the default file to look for in this directory
 DirectoryIndex index.php
 
@@ -12,3 +16,24 @@ DirectoryIndex index.php
 
 # Turn off directory listing (security)
 Options -Indexes
+
+# -------------------------------------------------------------------
+# API endpoints: do not cache, do not display errors
+# -------------------------------------------------------------------
+<IfModule mod_headers.c>
+    <FilesMatch "\.php$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+    </FilesMatch>
+</IfModule>
+
+# -------------------------------------------------------------------
+# Restrict access to sensitive files in backend
+# -------------------------------------------------------------------
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(env|ini|log|md|sql)$">
+    Require all denied
+</FilesMatch>

@@ -1,42 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Details - Mombasa Hamlets FC</title>
-    <meta name="description" content="Match details, lineups, and commentary for Mombasa Hamlets FC">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        .match-details-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-top: -50px; /* Overlap hero */
-            position: relative;
-            z-index: 10;
-        }
-        .details-header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 2rem; }
-        .score-board { display: flex; justify-content: space-around; align-items: center; font-size: 2rem; font-weight: bold; }
-        .team-display { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 40%; }
-        .team-display img { width: 100px; height: 100px; object-fit: contain; }
-        .score-display { font-size: 3rem; color: var(--red); }
-        .match-meta { text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem; }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
-        .lineups-section, .stats-section, .report-section { background: #f9f9f9; padding: 1.5rem; border-radius: 8px; }
-        h3 { color: var(--dark-red); margin-bottom: 1rem; border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; }
-        .lineup-list { list-style: none; }
-        .lineup-list li { padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .lineup-list li:last-child { border-bottom: none; }
-        @media (max-width: 768px) {
-            .details-grid { grid-template-columns: 1fr; }
-            .score-board { flex-direction: column; gap: 2rem; }
-            .team-display { width: 100%; }
-        }
-    </style>
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Match Preview - Mombasa Hamlets FC';
+$pageDescription = 'Preview of the upcoming Mombasa Hamlets FC match. Team news, formations, and prediction.';
+$pageImage = 'images/logo1.webp';
+$extraCss = ['css/match-preview.css'];
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body>
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

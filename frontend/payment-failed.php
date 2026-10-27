@@ -19,120 +19,114 @@ if ($orderId > 0) {
     $orderInfo = $result->fetch_assoc();
     $stmt->close();
 }
+
+$pageTitle = 'Payment Failed - Mombasa Hamlets FC';
+$pageDescription = 'Payment processing failed for your Mombasa Hamlets FC order. Retry payment or contact support.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Failed - Mombasa Hamlets FC</title>
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <style>
+<style>
+    .payment-failed-container {
+        max-width: 600px;
+        margin: 60px auto;
+        padding: 40px;
+        text-align: center;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .failed-icon {
+        font-size: 4rem;
+        color: var(--red, #DC3545);
+        margin-bottom: 25px;
+    }
+    .failed-icon i {
+        font-size: 4rem;
+    }
+    h1 {
+        color: var(--dark-navy, #0A192F);
+        margin-bottom: 10px;
+    }
+    .failed-message {
+        color: var(--text-secondary, #666);
+        font-size: 1.1em;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    .order-details-failed {
+        background: var(--off-white, #f8f9fa);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 25px 0;
+        text-align: left;
+    }
+    .order-details-failed h4 {
+        margin-top: 0;
+        color: var(--dark-navy, #0A192F);
+    }
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-color, #dee2e6);
+    }
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    .btn-retry {
+        background: var(--primary-blue, #003366);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin: 15px 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-retry:hover {
+        background: var(--accent-gold, #DAA520);
+    }
+    .btn-home {
+        background: transparent;
+        color: var(--primary-blue, #003366);
+        border: 2px solid var(--primary-blue, #003366);
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin: 15px 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    .btn-home:hover {
+        background: var(--primary-blue, #003366);
+        color: white;
+    }
+    .error-details {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(220, 53, 69, 0.05);
+        border-radius: 8px;
+        font-size: 0.9em;
+        color: var(--text-secondary, #666);
+        border-left: 4px solid var(--red, #DC3545);
+    }
+    @media (max-width: 768px) {
         .payment-failed-container {
-            max-width: 600px;
-            margin: 60px auto;
-            padding: 40px;
-            text-align: center;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin: 20px;
+            padding: 25px;
         }
-        .failed-icon {
-            font-size: 4rem;
-            color: var(--red, #DC3545);
-            margin-bottom: 25px;
-        }
-        .failed-icon i {
-            font-size: 4rem;
-        }
-        h1 {
-            color: var(--dark-navy, #0A192F);
-            margin-bottom: 10px;
-        }
-        .failed-message {
-            color: var(--text-secondary, #666);
-            font-size: 1.1em;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .order-details-failed {
-            background: var(--off-white, #f8f9fa);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 25px 0;
-            text-align: left;
-        }
-        .order-details-failed h4 {
-            margin-top: 0;
-            color: var(--dark-navy, #0A192F);
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color, #dee2e6);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .btn-retry {
-            background: var(--primary-blue, #003366);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin: 15px 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-retry:hover {
-            background: var(--accent-gold, #DAA520);
-        }
-        .btn-home {
-            background: transparent;
-            color: var(--primary-blue, #003366);
-            border: 2px solid var(--primary-blue, #003366);
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 15px 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .btn-home:hover {
-            background: var(--primary-blue, #003366);
-            color: white;
-        }
-        .error-details {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(220, 53, 69, 0.05);
-            border-radius: 8px;
-            font-size: 0.9em;
-            color: var(--text-secondary, #666);
-            border-left: 4px solid var(--red, #DC3545);
-        }
-        @media (max-width: 768px) {
-            .payment-failed-container {
-                margin: 20px;
-                padding: 25px;
-            }
-        }
-    </style>
-</head>
-<body>
+    }
+</style>
     <div class="payment-failed-container">
         <div class="failed-icon">
             <i class="fas fa-exclamation-circle"></i>

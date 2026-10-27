@@ -1,5 +1,13 @@
 // Auto-detect API base URL for frontend pages (supports Live Server, WAMP, and production)
+// Priority: 1) window.BASE_URL from PHP config, 2) VS Code Live Server detection, 3) auto-derive from URL
 (function () {
+    // If PHP has already injected a BASE_URL, use it (most reliable for production)
+    if (window.BASE_URL) {
+        window.PROJECT_BASE = window.BASE_URL.replace(/\/+$/, '');
+        window.API_URL = (window.BASE_URL + '/backend/api').replace(/\/{2,}/g, '/');
+        return;
+    }
+
     const host = window.location.hostname;
     const port = window.location.port;
 
@@ -8,6 +16,8 @@
     // Case 1: Developing with VS Code Live Server (e.g., http://127.0.0.1:5500)
     // Need to point explicitly to the WAMP PHP backend that serves the API.
     if (isLocalHost && port === '5500') {
+        window.BASE_URL = 'http://localhost/mombasahamlets_web';
+        window.PROJECT_BASE = 'http://localhost/mombasahamlets_web';
         window.API_URL = 'http://localhost/mombasahamlets_web/backend/api';
         return;
     }
@@ -47,8 +57,9 @@
     }
 
     const basePath = deriveProjectBase().replace(/\/+$/, '');
-    window.PROJECT_BASE = basePath;
+    window.PROJECT_BASE = window.location.origin + basePath;
+    window.BASE_URL = window.PROJECT_BASE;
 
     // Case 2 & 3: Served from WAMP (localhost) or production server
-    window.API_URL = `${basePath}/backend/api`.replace(/\/{2,}/g, '/');
+    window.API_URL = (window.PROJECT_BASE + '/backend/api').replace(/\/{2,}/g, '/');
 })();

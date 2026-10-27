@@ -11,18 +11,13 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Details - Mombasa Hamlets FC</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/ticket-details.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Ticket Details - Mombasa Hamlets FC';
+$pageDescription = 'View your Mombasa Hamlets FC event ticket details. Download and access your match tickets.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body>
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Mombasa Hamlets</title>
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/login-register.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-    <body data-page="login">
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Login - Mombasa Hamlets FC';
+$pageDescription = 'Login to your Mombasa Hamlets FC account. Access your dashboard, tickets, and order history.';
+$pageImage = 'images/logo1.webp';
+$extraCss = ['css/login-register.css'];
+include __DIR__ . '/includes/meta_head.php';
+?>
+<body data-page="login">
     <div class="form-container">
         <div class="form-box">
             <div class="form-header">

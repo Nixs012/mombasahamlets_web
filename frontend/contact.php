@@ -2,20 +2,13 @@
 require_once __DIR__ . '/../backend/includes/session_config.php';
 require_once __DIR__ . '/../backend/includes/auth.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - Mombasa Hamlets FC</title>
-    <meta name="description"
-        content="Get in touch with Mombasa Hamlets FC - contact information, location, and inquiry forms">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css?v=faq_fix">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Contact Us - Mombasa Hamlets FC';
+$pageDescription = 'Contact Mombasa Hamlets FC at Nyali Road, Mombasa. Phone +254 723 456 789. Email info@mombasahamletsfc.co.ke';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="contact">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

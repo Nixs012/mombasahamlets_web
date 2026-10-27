@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://mombasahamletsfc.co.ke/sitemap.xml
+
+# Disallow backend access
+Disallow: /backend/
+Disallow: /frontend/includes/
+Disallow: /frontend/config/
+Disallow: /frontend/images/favicon-*.png
+
+# Crawl-delay for polite crawling
+Crawl-delay: 10
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /frontend/images/
+Allow: /css/
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /backend/
+Disallow: /frontend/includes/
+Disallow: /frontend/config/
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /backend/

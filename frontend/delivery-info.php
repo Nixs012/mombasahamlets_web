@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Info - Mombasa Hamlets FC</title>
-    <meta name="description"
-        content="Find delivery information for Mombasa Hamlets FC online store. Delivery fees, zones, pickup points, and shipping timelines.">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-</head>
-
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'Delivery Information - Mombasa Hamlets FC';
+$pageDescription = 'Delivery info for Mombasa Hamlets FC merchandise. KSh 150 Mombasa Island, KSh 300 outside, pickup at Islandmifts.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="delivery">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

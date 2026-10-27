@@ -1,10 +1,11 @@
-# Root .htaccess - Redirect to frontend folder
-# This ensures that accessing the root URL redirects to frontend
+# ===================================================================
+# Mombasa Hamlets FC — Root .htaccess
+# ===================================================================
 
-# Redirect root requests to frontend
-DirectoryIndex frontend/index.php
+# Set the default file to look for in this directory
+DirectoryIndex index.php frontend/index.php
 
-# Ensure access is allowed (Apache 2.4+ and 2.2 fallback)
+# Ensure access is allowed
 <IfModule mod_authz_core.c>
     Require all granted
 </IfModule>
@@ -13,19 +14,68 @@ DirectoryIndex frontend/index.php
     Allow from all
 </IfModule>
 
-# Allow access to frontend and backend directories
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # If accessing root and no file specified, redirect to frontend
-    RewriteCond %{REQUEST_URI} ^/mombasahamlets_web/?$
-    RewriteRule ^$ frontend/index.php [L,R=301]
-    
-    # Allow direct access to frontend and backend
-    RewriteCond %{REQUEST_URI} ^/mombasahamlets_web/(frontend|backend)/
-    RewriteRule ^ - [L]
-</IfModule>
-
-# Prevent directory listing
+# Turn off directory listing (security)
 Options -Indexes
 
+# -------------------------------------------------------------------
+# Enable GZIP compression for text-based content
+# -------------------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE application/font-woff2
+</IfModule>
+
+# -------------------------------------------------------------------
+# Security headers
+# -------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Content-Security-Policy "default-src 'self'; img-src 'self' data: https://res.cloudinary.com https://images.unsplash.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.paystack.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; connect-src 'self' https://api.paystack.co; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; object-src 'none';"
+</IfModule>
+
+# -------------------------------------------------------------------
+# Disable server signature
+# -------------------------------------------------------------------
+ServerSignature Off
+
+# -------------------------------------------------------------------
+# WebP content negotiation: serve .webp when available and supported
+# Allows existing .jpg/.jpeg/.png references to transparently use WebP
+# -------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Check if the browser accepts WebP
+    RewriteCond %{HTTP_ACCEPT} image/webp
+
+    # Try to serve .webp version of the requested image
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/frontend/images/$1.webp -f
+    RewriteRule ^(images/(.+)\.(jpe?g?|png|gif))$ $1.webp [T=image/webp,E=accept:1]
+
+    # Also handle images referenced from frontend/images subdirs
+    RewriteCond %{HTTP_ACCEPT} image/webp
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.webp -f
+    RewriteRule ^(.*)\.(jpe?g?|png|gif)$ $1.webp [T=image/webp,E=accept:1]
+
+    # Set Vary header so proxies cache correctly
+    <IfModule mod_headers.c>
+        Header append Vary Accept env=accept
+    </IfModule>
+</IfModule>

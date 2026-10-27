@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News - Mombasa Hamlets FC</title>
-    <meta name="description" content="Latest news and updates from Mombasa Hamlets Football Club">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/news.css?v=2">
-</head>
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'News - Mombasa Hamlets FC';
+$pageDescription = 'Latest news and updates from Mombasa Hamlets Football Club. Breaking news, transfers, and match reports.';
+$pageImage = 'images/logo1.webp';
+$extraCss = ['css/news.css'];
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="news">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>

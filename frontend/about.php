@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - Mombasa Hamlets FC</title>
-    <meta name="description" content="Learn about Mombasa Hamlets FC - our history, mission, values, and achievements">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/about.css">
-</head>
-
+<?php
+require_once __DIR__ . '/../config/asset_helper.php';
+$pageTitle = 'About Us - Mombasa Hamlets FC';
+$pageDescription = 'Learn about Mombasa Hamlets Football Club history, mission, vision, and values. Founded in 1995, representing Mombasa with pride.';
+$pageImage = 'images/logo1.webp';
+include __DIR__ . '/includes/meta_head.php';
+?>
 <body data-page="about">
     <!-- Mobile Sidebar -->
     <div class="sidebar-overlay"></div>
